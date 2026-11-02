@@ -17,7 +17,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File setup\install.ps1 -Check
 
 ## 기록 형식
 
-기록은 [setup/skills/til/SKILL.md](setup/skills/til/SKILL.md)의 형식을 따른다. `/til` 없이 손으로 고칠 때도 같다: `YYYY/MM/YYYY-MM-DD.md` 하루 파일 하나, 항목 제목 앞 `[프로젝트]`/`[개념]`/`[코테]` 꼬리표, README 목차, `glossary.md`. 공개 레포라 학교 답변 원문·운영 값·키·개인정보·팀원 실명은 넣지 않는다.
+기록은 [setup/skills/til/SKILL.md](setup/skills/til/SKILL.md)의 형식과 [setup/til-style.md](setup/til-style.md)의 스타일 규칙(이쪽이 우선)을 따르고, 올리기 전에 초안을 보여 주고 확인받는다. `/til` 없이 손으로 고칠 때도 같다: `YYYY/MM/YYYY-MM-DD.md` 하루 파일 하나, 항목 제목 앞 `[프로젝트]`/`[개념]`/`[코테]` 꼬리표, README 목차, `glossary.md`. 공개 레포라 학교 답변 원문·운영 값·키·개인정보·팀원 실명은 넣지 않는다.
 
 ## 설정을 고칠 때
 
