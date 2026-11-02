@@ -1,30 +1,50 @@
 # setup — 기록 환경 설치
 
-Claude Code에서 `/til`로 기록하려면 컴퓨터마다 한 번 설치한다. 설치하면 아래 세 가지가 `~/.claude`에 들어간다.
+이 레포는 기록만 모아 두는 곳이 아니라, Claude Code에서 공부하고 기록하는 방식을 함께 담고 있다. 아래 세 가지를 컴퓨터마다 `~/.claude`에 설치해야 그 컴퓨터에서도 같은 방식으로 동작한다. 레포를 받기만 해서는 적용되지 않는다.
 
-| 파일 | 하는 일 |
-|---|---|
-| `CLAUDE.md` | 전역 지침. 세션 이름을 `[분류] 주제 #PR`로 붙이고 사이드바 그룹에 넣는 규칙 |
-| `skills/til/` | `/til` 스킬. 대화에서 새로 배운 것을 오늘 날짜 파일에 정리하고 push한다 |
-| `session-name-hook.txt` | 요청마다 세션 이름을 점검하게 하는 훅 문구. `settings.json`에 병합된다 |
+## 설치하면 바뀌는 것
 
-## 처음 설치 (Windows)
+### 1. `/til` 스킬 — `~/.claude/skills/til/`
+
+- **하는 일**: 대화 끝이나 중간에 `/til`을 치면, 그 대화에서 새로 배운 것만 골라 이 레포의 오늘 날짜 파일(`YYYY/MM/YYYY-MM-DD.md`)에 정리하고 커밋·push한다. 하루에 몇 번이든 쓸 수 있고, 이미 기록한 것은 다시 쓰지 않는다.
+- **정리 방식**: 대화에서 내가 쓴 표현을 먼저 살리고, 개념은 "내 말로 / 정식 표현" 두 줄로 남긴다. 같은 용어는 `glossary.md`에 적힌 말을 그대로 쓴다. 갈래는 `[프로젝트]`(문제 → 해결, 고른 이유, 버린 방법), `[개념]`, `[코테]` 세 가지다.
+- **확인 없이 올린다**: 초안을 보여 주고 묻지 않는다. 공개 레포라 학교 답변 원문·운영 값·키·개인정보·팀원 실명은 자동으로 빼고 쓴다.
+- **왜**: 멘토 조언(문제와 해결, 왜 그 방법을 골랐고 무엇을 버렸는지까지 회고)을 꾸준히 남기기 위해서. 직접 정리하는 부담을 줄여 기록이 끊기지 않게 하려고 자동으로 만들었다.
+- **이 컴퓨터에서 필요한 것**: `gh`가 ChildrenAon 계정으로 로그인돼 있어야 push된다.
+
+### 2. 전역 규칙 — `~/.claude/CLAUDE.md`의 `TIL-SETUP` 블록
+
+- **하는 일**: 모든 프로젝트의 Claude 세션에 적용된다.
+  - **세션 이름**: 주제가 보이면 Claude가 `[분류] 주제 #PR` 형식으로 이름을 붙이고, 작업 범위가 바뀌거나 PR이 생기면 다시 붙인다. 분류는 개발 / 공부 / 문서 / 상담 / 수업 / 기타.
+  - **사이드바 그룹**: 이름을 붙일 때 맞는 그룹(ONE Student / 익산 스토어 / 수업 / 상담·취업 / 공부·기타)으로 옮긴다. 세션의 주된 작업이 바뀌면 그룹도 다시 옮긴다. 그 컴퓨터에 그룹이 없으면 처음 한 번 만든다.
+- **왜**: 앱이 첫 메시지로 붙이는 이름("git pull 진행" 등)으로는 나중에 무슨 세션이었는지 알 수 없어서.
+- **이 컴퓨터에서 바뀌는 것**: `CLAUDE.md`에 `<!-- TIL-SETUP:BEGIN -->` ~ `<!-- TIL-SETUP:END -->` 블록만 넣는다. 그 밖에 원래 있던 내용은 그대로 둔다. 바꾸기 전 파일은 `CLAUDE.md.bak`으로 남긴다.
+
+### 3. 세션 이름 점검 훅 — `~/.claude/settings.json`의 `UserPromptSubmit`
+
+- **하는 일**: 요청을 보낼 때마다 "주제가 정해지거나 바뀌었으면 이름과 그룹을 규칙대로 갱신하라"는 한 줄을 Claude에게 붙인다(`session-name-hook.txt`). 화면에는 보이지 않는다.
+- **왜**: 전역 규칙만 있으면 긴 세션에서 이름 갱신을 잊을 때가 있어서, 매 요청마다 상기시킨다.
+- **이 컴퓨터에서 바뀌는 것**: `settings.json`의 다른 설정과 훅은 그대로 두고 이 훅 하나만 추가한다. 이미 있으면 문구만 최신으로 맞춘다. 바꾸기 전 파일은 `settings.json.bak`으로 남긴다.
+
+## 점검과 설치 (Windows)
 
 ```powershell
 gh repo clone ChildrenAon/TIL "$HOME\Desktop\project\TIL"
 cd "$HOME\Desktop\project\TIL"
-powershell -ExecutionPolicy Bypass -File setup\install.ps1
+powershell -ExecutionPolicy Bypass -File setup\install.ps1 -Check   # 지금 상태만 본다
+powershell -ExecutionPolicy Bypass -File setup\install.ps1          # 설치
 ```
 
-클론 위치는 아무 곳이나 괜찮다. 설치 스크립트가 이 레포 경로를 스킬에 기록한다. 설치한 뒤에는 Claude 세션을 새로 시작한다.
+`-Check`는 세 항목을 `최신` / `옛 버전` / `없음`으로 보여 주고 아무것도 바꾸지 않는다. 클론 위치는 아무 곳이나 괜찮다. 설치 스크립트가 레포 경로를 스킬에 적어 둔다. 설치한 뒤에는 Claude 세션을 새로 시작한다.
+
+Claude 세션에서 "ChildrenAon/TIL 받아 줘"라고만 해도 된다. 레포의 `CLAUDE.md`에 따라 Claude가 점검을 돌리고, 무엇이 있는지 정리해서 적용할지 먼저 묻는다.
+
+## 되돌리기
+
+- 스킬: `~/.claude/skills/til` 폴더를 지운다.
+- 전역 규칙: `~/.claude/CLAUDE.md`에서 `TIL-SETUP` 블록을 지우거나 `CLAUDE.md.bak`으로 되돌린다.
+- 훅: `~/.claude/settings.json`의 `UserPromptSubmit`에서 `[세션 이름 점검]` 항목을 지우거나 `settings.json.bak`으로 되돌린다.
 
 ## 규칙을 고칠 때
 
-`~/.claude`의 파일을 직접 고치지 말고 이 레포의 `setup/` 파일을 고친 뒤 push한다. 다른 컴퓨터에서는 아래 두 줄로 맞춘다.
-
-```powershell
-git pull
-powershell -ExecutionPolicy Bypass -File setup\install.ps1
-```
-
-스크립트는 여러 번 실행해도 된다. 기존 `CLAUDE.md`가 다르면 `.bak-날짜`로 백업하고, `settings.json`은 `.bak`을 남긴 뒤 훅만 병합한다. 다른 설정은 건드리지 않는다.
+`~/.claude`의 파일을 직접 고치지 말고 이 레포의 `setup/`을 고친 뒤 push한다. 다른 컴퓨터는 `git pull` 뒤 `-Check`로 `옛 버전`이 보이면 다시 설치한다.

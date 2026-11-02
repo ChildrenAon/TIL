@@ -1,6 +1,6 @@
-# 전역 지침
+# 전역 지침 (TIL setup)
 
-> 원본은 TIL 레포의 `setup/CLAUDE.md`다. 고칠 때는 레포 파일을 고치고 push한 뒤 기기마다 `setup/install.ps1`을 다시 실행한다. 이 파일만 고치면 다른 컴퓨터에는 반영되지 않는다.
+> 이 블록은 TIL 레포(ChildrenAon/TIL)의 `setup/CLAUDE.md`에서 `setup/install.ps1`이 설치했다. 고칠 때는 레포 파일을 고치고 push한 뒤 기기마다 설치 스크립트를 다시 실행한다. 이 블록 밖에 쓴 내용은 설치 스크립트가 건드리지 않는다.
 
 ## 세션 이름
 
@@ -15,12 +15,18 @@ Claude 데스크톱 앱(Code 탭) 세션은 사이드바에서 이름만 보고 
 
 ## 사이드바 그룹
 
-이름을 처음 붙일 때 그 세션을 맞는 사이드바 그룹에도 넣는다(`mcp__ccd_sidebar__list_groups`로 id를 찾고 `mcp__ccd_sidebar__move_sessions`에 `["self"]`). 이미 그룹에 들어 있으면 옮기지 않는다. 그룹이 없는 기기면 아래 이름으로 만든다.
+이름을 붙이거나 다시 붙일 때마다 그 세션이 지금 주제에 맞는 사이드바 그룹에 있는지 본다(`mcp__ccd_sidebar__list_groups`, 세션의 현재 그룹은 `mcp__ccd_session_mgmt__get_session`의 `group`).
 
-- `ONE Student`: wku-ai-chat(ONE-Student-WKU/web) 개발·문서·발표
-- `익산 스토어`: BE-repo·FE-repo(wku-iksan-store) 작업과 팀 협의
-- `수업`: 과제·시험·실습
-- `상담·취업`: 멘토링, 자기소개서·채용, 학교 부서 면담 준비
-- `공부·기타`: 개념 공부, TIL, 도구 조사, 파일 정리
+- 그룹이 없거나, **주제가 바뀌어 다른 그룹에 더 맞게 되었으면** `mcp__ccd_sidebar__move_sessions`(`["self"]`)로 옮긴다.
+- 이미 맞는 그룹에 있으면 그대로 둔다. 한 세션 안에서 주제가 잠깐 곁가지로 샜다가 돌아오는 정도로는 옮기지 않는다. 세션의 주된 작업이 바뀌었을 때만 옮긴다.
+- 그룹이 없는 기기면 아래 이름으로 만든다.
+
+| 그룹 | 넣을 세션 |
+|---|---|
+| `ONE Student` | wku-ai-chat(ONE-Student-WKU/web) 개발·문서·발표 |
+| `익산 스토어` | BE-repo·FE-repo(wku-iksan-store) 작업과 팀 협의 |
+| `수업` | 과제·시험·실습 |
+| `상담·취업` | 멘토링, 자기소개서·채용, 학교 부서 면담 준비 |
+| `공부·기타` | 개념 공부, TIL, 도구 조사, 파일 정리 |
 
 어디에도 맞지 않으면 그룹에 넣지 않고 둔다. 새 그룹은 사용자가 말할 때만 만든다.
