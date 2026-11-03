@@ -18,7 +18,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File setup\install.ps1 -Check
 
 ## 기록 형식
 
-기록은 [setup/skills/til/SKILL.md](setup/skills/til/SKILL.md)의 형식과 [setup/til-style.md](setup/til-style.md)의 스타일 규칙(이쪽이 우선)을 따르고, 올리기 전에 초안을 보여 주고 확인받는다. `/til` 없이 손으로 고칠 때도 같다: `YYYY/Month/MM-DD.md` 하루 파일 하나, 주제별 대제목(가장 큰 `# 정보보안`, `# ONE Student`, `# 코테`)과 그 아래 번호 항목(`## 1. 제목`), README 목차(대제목별), `glossary.md`, 항목 구조(맨 위 한 줄 결론 · `###` 소제목 · 표/도식 · 경고 박스), 프로젝트 대제목이면 `projects/<이름>.md` 지도. 공개 레포라 학교 답변 원문·운영 값·키·개인정보·팀원 실명은 넣지 않는다.
+기록은 [setup/skills/til/SKILL.md](setup/skills/til/SKILL.md)의 형식과 [setup/til-style.md](setup/til-style.md)의 스타일 규칙(이쪽이 우선)을 따르고, 올리기 전에 묻지 않고 바로 올린 뒤 사용자가 GitHub에서 보고 피드백하면 고친다(새벽 모아 보기 예약 작업만 초안을 보여 주고 확인받는다). `/til` 없이 손으로 고칠 때도 같다: `YYYY/Month/MM-DD.md` 하루 파일 하나, 주제별 대제목(가장 큰 `# 정보보안`, `# ONE Student`, `# 코테`)과 그 아래 번호 항목(`## 1. 제목`), README 목차(대제목별), `glossary.md`, 항목 구조(맨 위 한 줄 결론 · `###` 소제목 · 표/도식 · 경고 박스), 프로젝트 대제목이면 `projects/<이름>.md` 지도. 공개 레포라 학교 답변 원문·운영 값·키·개인정보·팀원 실명은 넣지 않는다.
 
 ## 설정을 고칠 때
 
