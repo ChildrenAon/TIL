@@ -37,6 +37,9 @@ setup/                  기록 도구 설정 (Claude Code /til 스킬, 설치 �
 
 ### ONE Student
 
+- 2026-11-03 [HTTP 정보와 서비스 분리](2026/November/11-03.md#6-http-정보와-서비스-분리)
+- 2026-11-03 [graduation.js 읽기](2026/November/11-03.md#5-graduationjs-읽기)
+- 2026-11-03 [server/ 폴더 구조와 흐름 매핑](2026/November/11-03.md#4-server-폴더-구조와-흐름-매핑)
 - 2026-11-03 [서비스와 연결 풀](2026/November/11-03.md#3-서비스와-연결-풀)
 - 2026-11-03 [라우터, 컨트롤러, 서비스 구분](2026/November/11-03.md#2-라우터-컨트롤러-서비스-구분)
 - 2026-11-03 [요청 하나가 지나가는 길](2026/November/11-03.md#1-요청-하나가-지나가는-길)
@@ -44,6 +47,12 @@ setup/                  기록 도구 설정 (Claude Code /til 스킬, 설치 �
 ### 익산 스토어
 
 아직 없음
+
+### JavaScript
+
+- 2026-11-03 [async와 await](2026/November/11-03.md#3-async와-await)
+- 2026-11-03 [함수: 화살표 함수와 파라미터](2026/November/11-03.md#2-함수-화살표-함수와-파라미터)
+- 2026-11-03 [require와 module.exports](2026/November/11-03.md#1-require와-moduleexports)
 
 ### 정보보안
 

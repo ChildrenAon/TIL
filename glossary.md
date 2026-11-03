@@ -14,3 +14,12 @@
 | 컨트롤러 | 그 함수를 실행해 서비스를 부르고 JSON으로 포장해 응답하는 쪽 | 컨트롤러(controller) | [2026-11-03](2026/November/11-03.md) |
 | 서비스 | 업무 규칙을 처리하고 연결 풀로 DB에 질의해 가공한 값을 돌려주는 쪽 | 서비스 계층(service layer) | [2026-11-03](2026/November/11-03.md) |
 | 연결 풀 | 구멍 20개짜리 공용 멀티탭. 쓸 때만 빌리고 바로 반납해 다음 서비스가 재사용 | 데이터베이스 연결 풀(connection pool) | [2026-11-03](2026/November/11-03.md) |
+| require | 다른 파일이 module.exports로 공개한 것을 가져오는 것 | require (CommonJS 모듈 가져오기) | [2026-11-03](2026/November/11-03.md) |
+| module.exports | 이 파일이 밖에 공개하는 함수 목록 | module.exports (CommonJS 내보내기) | [2026-11-03](2026/November/11-03.md) |
+| 구조 분해 | `{ }`로 공개 목록에서 필요한 이름 하나만 꺼내 저장하는 것 | 구조 분해 할당(destructuring) | [2026-11-03](2026/November/11-03.md) |
+| 화살표 함수 | `function`을 `=>`로 짧게 쓴 함수 | 화살표 함수(arrow function) | [2026-11-03](2026/November/11-03.md) |
+| async / await | await는 엉뚱한 값을 쓰기 전에 그 줄에서 기다리게 하는 명령, async는 그 함수 안에서 await를 쓰겠다는 선언 | 비동기 처리(async/await) | [2026-11-03](2026/November/11-03.md) |
+| Promise | 아직 안 온 결과를 대신 들고 있는 표식 (`Promise { <pending> }`) | Promise | [2026-11-03](2026/November/11-03.md) |
+| 세션 | 로그인 때 서버가 저장해 둔 사용자 정보를 쿠키의 세션 ID로 찾아 쓰는 방식 | 세션(session) | [2026-11-03](2026/November/11-03.md) |
+| HTTP | 클라이언트와 서버가 요청과 응답을 주고받는 형식의 규칙 | HTTP(HyperText Transfer Protocol) | [2026-11-03](2026/November/11-03.md) |
+| 클라이언트 · 서버 | 요청을 보내는 쪽(React 앱) · 받아서 응답하는 쪽(Express 앱) | 클라이언트–서버 모델 | [2026-11-03](2026/November/11-03.md) |
