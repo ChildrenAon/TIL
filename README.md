@@ -9,7 +9,7 @@
 ## 구조
 
 ```
-YYYY/MM/YYYY-MM-DD.md   하루에 파일 하나. 그날 배운 것을 꼬리표와 함께 쌓는다
+YYYY/Month/YYYY-MM-DD.md   하루에 파일 하나. Month는 영어 월 이름(2026/November/2026-11-03.md). 그날 배운 것을 꼬리표와 함께 쌓는다
 glossary.md             용어집. 내 말로 이해한 표현과 정식 표현을 같이 둔다
 setup/                  기록 도구 설정 (Claude Code /til 스킬, 설치 스크립트)
 ```
