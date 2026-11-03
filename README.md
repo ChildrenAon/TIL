@@ -10,11 +10,21 @@
 
 ```
 YYYY/Month/MM-DD.md   하루에 파일 하나. Month는 영어 월 이름(2026/November/11-03.md). 그날 배운 것을 꼬리표와 함께 쌓는다
+projects/               프로젝트 지도. [프로젝트] 기록이 구조의 어디쯤인지 돌아와 확인하는 곳
 glossary.md             용어집. 내 말로 이해한 표현과 정식 표현을 같이 둔다
 setup/                  기록 도구 설정 (Claude Code /til 스킬, 설치 스크립트)
 ```
 
 기록은 Claude Code와 대화하며 공부한 뒤 `/til`로 정리해 올린다. 정리할 때 대화에서 내가 쓴 표현을 먼저 살린다.
+
+글은 맨 위 **한 줄 결론**만 읽어도 요점이 잡히고, 소제목 · 표 · 도식 · 경고 박스로 강약을 둔다. 규칙은 [setup/til-style.md](setup/til-style.md).
+
+## 프로젝트 지도
+
+[프로젝트] 기록을 읽기 전에 한 번 보면 흐름이 이어진다.
+
+- [ONE Student](projects/one-student.md): 졸업요건 진단 · AI 챗봇 · 진로 탐색
+- [익산 스토어](projects/iksan-store.md): 장바구니 · 주문 · 선물 · 리뷰 (BE 중심)
 
 다른 컴퓨터에서 처음 받았다면 [setup/README.md](setup/README.md)를 본다. `/til` 스킬, 세션 이름 규칙, 점검 훅은 컴퓨터마다 설치해야 동작한다.
 
