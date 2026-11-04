@@ -1,5 +1,5 @@
 ﻿# TIL 기록 환경을 이 컴퓨터의 ~/.claude에 설치한다.
-#   - 전역 CLAUDE.md의 TIL-SETUP 블록 (세션 이름·사이드바 그룹 규칙)
+#   - 전역 CLAUDE.md의 TIL-SETUP 블록 (세션 이름·사이드바 그룹·공부 세션 설명 방식)
 #   - /til 스킬 (+ 이 레포 경로)
 #   - 요청마다 세션 이름을 점검하게 하는 UserPromptSubmit 훅
 # 설치:  powershell -ExecutionPolicy Bypass -File setup\install.ps1
