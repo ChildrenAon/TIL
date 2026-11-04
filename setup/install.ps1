@@ -69,13 +69,6 @@ Write-Host "전역 규칙(CLAUDE.md 블록): $mdState"
 Write-Host "/til 스킬: $skillState"
 Write-Host "세션 이름 훅: $hookState"
 
-# 새벽 모아 보기 예약 작업은 앱의 예약 작업 도구로만 만들 수 있어서 여기서는 점검만 한다.
-$taskFile = Join-Path $claude 'scheduled-tasks\til-collect\SKILL.md'
-$taskState = '없음'
-if (Test-Path $taskFile) {
-    if ((Read-Text $taskFile).Contains((Read-Text (Join-Path $setup 'til-collect-task.md')).Trim())) { $taskState = '최신' } else { $taskState = '옛 버전' }
-}
-Write-Host "새벽 모아 보기 예약(설치 스크립트 밖, Claude가 만듦): $taskState"
 if ($Check) { return }
 Write-Host ''
 
