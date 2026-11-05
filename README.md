@@ -38,6 +38,8 @@ setup/                  기록 도구 설정 (Claude Code /til 스킬, 설치 �
 
 ### ONE Student
 
+- 2026-11-05 [요청이 라우터를 지나는 순서](2026/November/11-05.md#2-요청이-라우터를-지나는-순서)
+- 2026-11-05 [라우터 만들고 도구 가져오기](2026/November/11-05.md#1-라우터-만들고-도구-가져오기)
 - 2026-11-03 [HTTP 정보와 서비스 분리](2026/November/11-03.md#6-http-정보와-서비스-분리)
 - 2026-11-03 [graduation.js 읽기](2026/November/11-03.md#5-graduationjs-읽기)
 - 2026-11-03 [server/ 폴더 구조와 흐름 매핑](2026/November/11-03.md#4-server-폴더-구조와-흐름-매핑)
@@ -51,6 +53,7 @@ setup/                  기록 도구 설정 (Claude Code /til 스킬, 설치 �
 
 ### JavaScript
 
+- 2026-11-05 [require는 호출하는 순간 가져온다](2026/November/11-05.md#1-require는-호출하는-순간-가져온다)
 - 2026-11-03 [async와 await](2026/November/11-03.md#3-async와-await)
 - 2026-11-03 [함수: 화살표 함수와 파라미터](2026/November/11-03.md#2-함수-화살표-함수와-파라미터)
 - 2026-11-03 [require와 module.exports](2026/November/11-03.md#1-require와-moduleexports)
