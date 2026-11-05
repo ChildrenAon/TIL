@@ -15,7 +15,7 @@
 | 서비스 | 업무 규칙을 처리하고 연결 풀로 DB에 질의해 가공한 값을 돌려주는 쪽 | 서비스 계층(service layer) | [2026-11-03](2026/November/11-03.md) |
 | 연결 풀 | 구멍 20개짜리 공용 멀티탭. 쓸 때만 빌리고 바로 반납해 다음 서비스가 재사용 | 데이터베이스 연결 풀(connection pool) | [2026-11-03](2026/November/11-03.md) |
 | require | 다른 파일이 module.exports로 공개한 것을 가져오는 것 | require (CommonJS 모듈 가져오기) | [2026-11-03](2026/November/11-03.md) |
-| module.exports | 이 파일이 밖에 공개하는 함수 목록 | module.exports (CommonJS 내보내기) | [2026-11-03](2026/November/11-03.md) |
+| module.exports | 이 파일이 밖에 내보낼 것을 넣어 두는 칸. 함수 호출이 아니라 `=`로 값을 넣는 대입 | module.exports (CommonJS 내보내기) | [2026-11-03](2026/November/11-03.md) |
 | 구조 분해 | `{ }`로 공개 목록에서 필요한 이름 하나만 꺼내 저장하는 것 | 구조 분해 할당(destructuring) | [2026-11-03](2026/November/11-03.md) |
 | 화살표 함수 | `function`을 `=>`로 짧게 쓴 함수 | 화살표 함수(arrow function) | [2026-11-03](2026/November/11-03.md) |
 | async / await | await는 엉뚱한 값을 쓰기 전에 그 줄에서 기다리게 하는 명령, async는 그 함수 안에서 await를 쓰겠다는 선언 | 비동기 처리(async/await) | [2026-11-03](2026/November/11-03.md) |
@@ -39,3 +39,6 @@
 | 요청 방식 | 요청이 하려는 일. GET은 조회, POST는 저장·실행 | HTTP 메서드(method) | [2026-11-05](2026/November/11-05.md) |
 | 상태 코드 | 응답에 붙는 결과 숫자(200 성공, 401 로그인 안 됨) | HTTP 상태 코드(status code) | [2026-11-05](2026/November/11-05.md) |
 | 상대 경로 | 지금 파일 기준으로 찾아가는 길. `./` 같은 폴더, `../` 한 단계 위 | 상대 경로(relative path) | [2026-11-05](2026/November/11-05.md) |
+| 응답 이름표 (code) | 응답에 다는 이름표. 에러일 때 라우터와 React가 이걸로 if 구분을 함 | 에러 코드(응답 본문의 code 필드) | [2026-11-05](2026/November/11-05.md) |
+| 공통 에러 처리기 | 라우터가 next(err)로 넘긴 에러를 마지막에 받아 500으로 응답하는 곳 | 에러 처리 미들웨어(error-handling middleware) | [2026-11-05](2026/November/11-05.md) |
+| .catch | 앞 작업이 실패했을 때만 실행되고, 돌려준 값이 성공 결과 자리에 대신 들어감 | Promise 에러 처리(Promise.prototype.catch) | [2026-11-05](2026/November/11-05.md) |
