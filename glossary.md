@@ -54,3 +54,8 @@
 | 옵셔널 체이닝 | 왼쪽 값이 있을 때만 넘어가고, 없으면 에러 없이 undefined | 옵셔널 체이닝(optional chaining) | [2026-11-07](2026/November/11-07.md) |
 | 속성 · 메서드 | 객체 안에 있는 값 · 객체 안에 있는 함수 | 속성(property) · 메서드(method) | [2026-11-07](2026/November/11-07.md) |
 | falsy | 조건 자리에서 거짓으로 취급되는 값(undefined, null 등) | falsy 값 | [2026-11-07](2026/November/11-07.md) |
+| 구조분해 | 객체나 배열의 구조에서 필요한 값을 분해해 변수에 담는 것 | 구조분해 할당(destructuring assignment) | [2026-11-07](2026/November/11-07.md) |
+| 배열 내장 메서드 | 배열에 기본으로 들어 있는 메서드. map, filter, find, some | 배열 내장 메서드(array methods) | [2026-11-07](2026/November/11-07.md) |
+| 템플릿 문자열 | 백틱으로 감싼 글자 안 `${ }` 자리에 값을 넣는 것 | 템플릿 리터럴(template literal) | [2026-11-07](2026/November/11-07.md) |
+| 널 병합 연산자 | 왼쪽이 null이나 undefined일 때만 오른쪽을 고름. 0과 빈 글자는 값으로 인정 | 널 병합 연산자(nullish coalescing operator) | [2026-11-07](2026/November/11-07.md) |
+| 스프레드 | 배열이나 객체의 내용을 펼쳐서 다른 곳에 넣는 것 | 스프레드 문법(spread syntax) | [2026-11-07](2026/November/11-07.md) |
