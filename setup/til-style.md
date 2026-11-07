@@ -33,5 +33,11 @@
 - 한 대제목에 항목이 2개 이상이면 대제목 바로 아래에 `> **흐름**:` mermaid 도식을 둔다. 간선 라벨에 "왜 다음으로 넘어갔나(질문)"를 적는다. 항목을 추가하면 도식도 이어서 고친다. (2026-11-03)
 - 하루 파일 맨 위에 **목차**를 항상 둔다(머리에 날짜: `> **2026-11-03 목차**`). 대제목별로 번호 항목을 링크로 나열하고, 항목마다 `—` 뒤에 20자 안팎의 한 줄 요약(한 줄 결론을 줄인 것)을 붙여서 열자마자 무엇을 공부했는지 색인처럼 보이게 한다. 항목을 추가하면 목차에도 한 줄 추가한다. (2026-11-03)
 - 흐름 도식은 항목이 4개 이상이면 `flowchart TD`(세로)로 쓴다. 가로(`LR`)로 길어지면 GitHub에서 글자가 작아져 읽을 수 없다. 3개 이하만 `LR`로 쓴다. (2026-11-07)
+- mermaid 도식은 맨 첫 줄에 아래 설정을 넣는다. 라벨이 단어 중간에서 끊기지 않고 한 줄로 나오며 라벨 안쪽에 여백이 생긴다. 뜻이 갈리는 곳이 아니면 `<br/>`을 넣지 않는다. (2026-11-07)
+
+  ```text
+  %%{init: {"flowchart": {"wrappingWidth": 600}, "themeCSS": ".edgeLabel div { display: table-cell !important; width: auto !important; max-width: none !important; white-space: nowrap !important; } .edgeLabel p { padding: 5px 12px !important; margin: 0 !important; background: #55555599; } .edgeLabel, .edgeLabel span, .edgeLabel .labelBkg { background: transparent !important; }"}}%%
+  ```
+
 - 프로젝트 대제목 아래 항목은 맨 위에 `> **지도에서 위치**:`(프로젝트 지도 링크 › 영역 › 기능)를 먼저 쓰고, 맨 끝에 같은 영역의 이전·다음 기록 링크를 단다. 프로젝트 지도 페이지(`projects/<이름>.md`)가 없으면 틀부터 만든다. (2026-11-03)
 
