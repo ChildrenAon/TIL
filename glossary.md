@@ -59,3 +59,6 @@
 | 템플릿 문자열 | 백틱으로 감싼 글자 안 `${ }` 자리에 값을 넣는 것 | 템플릿 리터럴(template literal) | [2026-11-07](2026/November/11-07.md) |
 | 널 병합 연산자 | 왼쪽이 null이나 undefined일 때만 오른쪽을 고름. 0과 빈 글자는 값으로 인정 | 널 병합 연산자(nullish coalescing operator) | [2026-11-07](2026/November/11-07.md) |
 | 스프레드 | 배열이나 객체의 내용을 펼쳐서 다른 곳에 넣는 것 | 스프레드 문법(spread syntax) | [2026-11-07](2026/November/11-07.md) |
+| 전체 참여 | 필참. 모든 개체가 DB에 있는 동안 내내 관계에 참여해야 함 | 전체 참여(total participation), 필수 참여(mandatory) | [2026-11-09](2026/November/11-09.md) |
+| 부분 참여 | 선택. 관계에 참여하지 않는 개체가 있어도 됨 | 부분 참여(partial participation), 선택 참여(optional) | [2026-11-09](2026/November/11-09.md) |
+| 참조 무결성 | 참조하는 값(외래키)은 참조되는 값(기본키) 밖으로 벗어날 수 없음. NULL은 허용 | 참조 무결성 제약(referential integrity constraint) | [2026-11-09](2026/November/11-09.md) |
