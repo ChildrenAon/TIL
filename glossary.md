@@ -70,3 +70,13 @@
 | 휘발성 · 영속성 | 프로그램이 꺼지면 값이 사라짐 · 꺼져도 남음. 앱 메모리는 휘발성, DB는 영속성 | 휘발성(volatile) · 영속성(persistence) | [2026-11-10](2026/November/11-10.md) |
 | 호스팅 | 내 프로그램을 24시간 켜진 컴퓨터에서 대신 돌려 주는 서비스(Railway, Vercel) | 호스팅(hosting) | [2026-11-10](2026/November/11-10.md) |
 | 1회용 코드 | 한 번 쓰면 사용 시각을 채워 다시 못 쓰게 만든 코드. 사용 완료는 코드의 상태 | 일회용 인증 코드(OTP), 토큰 소비(consume) | [2026-11-10](2026/November/11-10.md) |
+| cipher suite | 이번 연결에 쓸 암호 요소 조합의 이름. 발음은 사이퍼 스윗 | 암호 스위트(cipher suite) | [2026-11-10](2026/November/11-10.md) |
+| TLS 핸드셰이크 | 조합을 고르고, 서버 인증서를 확인하고, 키를 나눠 갖는 TLS의 절차. TCP 3-way handshake와 별개 | TLS 핸드셰이크 프로토콜 | [2026-11-10](2026/November/11-10.md) |
+| 중간 CA | 루트 CA의 서명을 받아 실제 서버 인증서를 발급하는 CA | 중간 인증 기관(intermediate CA) | [2026-11-10](2026/November/11-10.md) |
+| 상호 인증 | 서버뿐 아니라 클라이언트도 인증서로 확인하는 것 | 상호 인증(mutual TLS, mTLS) | [2026-11-10](2026/November/11-10.md) |
+| PreMaster | 클라이언트가 만들어 서버 공개키로 잠가 보내는 비밀값. 키 계산 재료 | PreMaster Secret | [2026-11-10](2026/November/11-10.md) |
+| 디피-헬먼 | 비밀값은 안 보내고 계산한 결과값만 교환해, 양쪽이 같은 공유 키를 각자 계산하는 방법 | 디피-헬먼 키 교환(Diffie-Hellman key exchange) | [2026-11-10](2026/November/11-10.md) |
+| 이산 로그 문제 | αˣ mod p를 봐도 x를 거꾸로 찾기 어려운 문제 | 이산 로그 문제(discrete logarithm problem) | [2026-11-10](2026/November/11-10.md) |
+| 계산적 안전성 | 이론상 풀 수 있지만 현실적인 시간 안에는 못 푸는 안전성 | 계산적 안전성(computational security) | [2026-11-10](2026/November/11-10.md) |
+| 연결 지향형 · 비연결형 | 연결을 맺고 보냄(TCP) · 연결 없이 바로 보냄(UDP) | 연결 지향형(connection-oriented) · 비연결형(connectionless) | [2026-11-10](2026/November/11-10.md) |
+| 체크섬 | 받은 데이터가 깨졌는지 확인하려고 헤더에 넣는 값. TCP · UDP 둘 다 있음 | 체크섬(checksum) | [2026-11-10](2026/November/11-10.md) |
