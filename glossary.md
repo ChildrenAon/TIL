@@ -98,3 +98,24 @@
 | 정리 함수 | useEffect가 돌려주는 함수. 다음 실행 전이나 언마운트 때 지난 작업(타이머 등)을 끔 | 정리 함수(cleanup function) | [2026-11-11](2026/November/11-11.md) |
 | 마운트 · 언마운트 | 컴포넌트가 화면에 붙음 · 화면에서 빠짐 | 마운트(mount) · 언마운트(unmount) | [2026-11-11](2026/November/11-11.md) |
 | 조건부 렌더링 | 상태에 따라 그릴 컴포넌트를 고르는 것. 떼고 붙이는 일은 React가 함 | 조건부 렌더링(conditional rendering) | [2026-11-11](2026/November/11-11.md) |
+| 리다이렉트 | "여기서 처리할 게 아니니 다른 곳으로 가 주세요"라는 응답. 브라우저가 Location 주소로 자동 이동 | HTTP 리다이렉트(3xx + Location 헤더) | [2026-11-12](2026/November/11-12.md) |
+| 콜백 함수 | 다른 함수에 인자로 넘겨, 그 함수가 나중에 부르게 하는 함수 (넘긴 함수 전체) | 콜백(callback) | [2026-11-12](2026/November/11-12.md) |
+| 콜백 주소 | Google이 로그인을 마친 뒤 브라우저를 돌려보내는 우리 주소 | 리디렉션 URI(redirect URI) | [2026-11-12](2026/November/11-12.md) |
+| URI · URL · URN | 자원을 가리키는 이름(상위어) · 위치로 가리킴 · 이름으로 가리킴 | URI · URL · URN | [2026-11-12](2026/November/11-12.md) |
+| 출처 | 프로토콜 + 도메인 + 포트. 셋이 모두 같아야 같은 출처 | 출처(origin) | [2026-11-12](2026/November/11-12.md) |
+| 동일 출처 정책 | 브라우저가 다른 출처의 응답을 막는 규칙 | 동일 출처 정책(same-origin policy) | [2026-11-12](2026/November/11-12.md) |
+| CORS | 다른 출처끼리 자원을 나눠 쓰는 규칙. 응답하는 서버가 허락함 | CORS(Cross-Origin Resource Sharing) | [2026-11-12](2026/November/11-12.md) |
+| 로그인 CSRF | 공격자가 자기 code가 붙은 콜백 주소를 피해자 브라우저가 열게 해, 피해자를 공격자 계정으로 로그인시키는 것 | 로그인 CSRF(login cross-site request forgery) | [2026-11-12](2026/November/11-12.md) |
+| state | 로그인을 시작한 브라우저와 콜백으로 돌아온 브라우저가 같은지 확인하는 일회용 무작위 값 | state 매개변수 | [2026-11-12](2026/November/11-12.md) |
+| 인가 코드 (code) | 토큰으로 바꿀 수 있는 교환권. 비밀값 없이는 쓸모없고 한 번만 바꿀 수 있음 | 인가 코드(authorization code) | [2026-11-12](2026/November/11-12.md) |
+| 앞길 · 뒷길 | 브라우저를 거쳐 오가는 길 · 우리 서버와 Google이 직접 주고받는 길 | front channel · back channel | [2026-11-12](2026/November/11-12.md) |
+| 클라이언트 ID · 클라이언트 비밀값 | 우리 앱의 아이디(주장, 공개) · 우리 앱의 비밀번호(증명, 서버에만) | client ID · client secret | [2026-11-12](2026/November/11-12.md) |
+| 액세스 토큰 | Google API에 내미는 출입증. "이 앱이 이 범위로 접근해도 됨" | 액세스 토큰(access token) | [2026-11-12](2026/November/11-12.md) |
+| ID 토큰 | 이 학생이 누구인지 적힌 신분증. Google이 서명한 JWT | ID 토큰(ID token) | [2026-11-12](2026/November/11-12.md) |
+| JWT | 머리.내용.서명 세 부분을 점으로 이은 토큰. 서명으로 위조 · 변조를 확인 | JWT(JSON Web Token) | [2026-11-12](2026/November/11-12.md) |
+| OAuth | 비밀번호를 주지 않고 정해진 범위의 권한만 앱에 맡기는 규격 | OAuth 2.0, 권한 위임(delegation) | [2026-11-12](2026/November/11-12.md) |
+| OIDC | OAuth의 틀에 로그인용 증명서(ID 토큰)와 검사 규칙을 덧붙인 규격. "오-아이-디-씨" | OpenID Connect | [2026-11-12](2026/November/11-12.md) |
+| 인가 · 인증 | 무엇을 해도 되나 · 누구인가 | 인가(authorization) · 인증(authentication) | [2026-11-12](2026/November/11-12.md) |
+| 재인증 | 위험한 일(계정 삭제) 직전에 본인임을 한 번 더 확인하는 것 | 재인증(reauthentication, step-up) | [2026-11-12](2026/November/11-12.md) |
+| 에러 우선 콜백 | 에러를 던지지 않고 콜백의 첫 번째 인자로 건네는 방식. 콜백 안에서 직접 확인해야 함 | 에러 우선 콜백(error-first callback) | [2026-11-12](2026/November/11-12.md) |
+| 클래스 · 객체 | 값과 할 일을 정해 둔 틀 · 그 틀로 new를 써서 찍어 낸 것(붕어빵) | 클래스(class) · 인스턴스(instance) | [2026-11-12](2026/November/11-12.md) |
