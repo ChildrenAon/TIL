@@ -140,3 +140,8 @@
 | 가비지 컬렉터(GC) | 아무도 가리키지 않는 값을 엔진이 알아서 찾아 메모리를 회수함. 회수 시점은 엔진이 정함 | 가비지 컬렉션(garbage collection) | [2026-11-20](2026/November/11-20.md) |
 | ON DELETE CASCADE | 부모 행(학생)이 지워지면 그 행을 가리키는 자식 행(과목)도 DB가 같이 지움 | 연쇄 삭제(ON DELETE CASCADE) | [2026-11-20](2026/November/11-20.md) |
 | MIME 타입 | 브라우저가 "이 파일은 무슨 형식"이라고 알려 주는 값. 앱을 거치면 틀리게 올 수 있음 | MIME 타입(`application/pdf` 등) | [2026-11-20](2026/November/11-20.md) |
+| 트랜잭션 | SQL 문 종류가 아니라 여러 문장을 묶는 포장지. 다 되거나 다 안 되거나. 코드에선 getConnection → beginTransaction → commit/rollback → release 세트로 보임 | 트랜잭션(transaction) | [2026-11-22](2026/November/11-22.md) |
+| FOR UPDATE | 읽으면서 "곧 바꿀 거니까" 그 행을 잠가 둠. 차감은 안 하고 줄만 세움, commit하면 풀림 | 비관적 잠금(SELECT … FOR UPDATE) | [2026-11-22](2026/November/11-22.md) |
+| 원자성 | 한 요청 안의 작업이 다 되거나 하나도 안 되거나. 두 요청 사이 끼어들기를 막는 건 아님 | 원자성(atomicity) | [2026-11-22](2026/November/11-22.md) |
+| N+1 문제 | 목록 1번 읽고 항목마다 또 N번 질의해서 쿼리가 불어나는 것. 한 번에 읽어 Map으로 찾아 피함 | N+1 쿼리 문제 | [2026-11-22](2026/November/11-22.md) |
+| 폴백 | 먼저 쉬운(싼) 길을 해 보고 안 되면 다음 길로 넘어가는 것 (붙여넣기: 규칙 → AI) | 폴백(fallback) | [2026-11-22](2026/November/11-22.md) |
