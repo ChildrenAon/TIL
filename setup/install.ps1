@@ -1,6 +1,7 @@
 ﻿# TIL 기록 환경을 이 컴퓨터의 ~/.claude에 설치한다.
 #   - 전역 CLAUDE.md의 TIL-SETUP 블록 (세션 이름·사이드바 그룹·공부 세션 설명 방식)
 #   - /til 스킬 (+ 이 레포 경로)
+#   - 코테 스킬 coding-test (+ 이 레포 경로)
 #   - 요청마다 세션 이름을 점검하게 하는 UserPromptSubmit 훅
 # 설치:  powershell -ExecutionPolicy Bypass -File setup\install.ps1
 # 점검:  powershell -ExecutionPolicy Bypass -File setup\install.ps1 -Check   (아무것도 바꾸지 않는다)
@@ -29,6 +30,7 @@ $block = (Read-Text (Join-Path $setup 'CLAUDE.md')).Trim()
 $command = (Read-Text (Join-Path $setup 'session-name-hook.txt')).Trim()
 $mdPath = Join-Path $claude 'CLAUDE.md'
 $skillDst = Join-Path $claude 'skills\til'
+$ctDst = Join-Path $claude 'skills\coding-test'
 $settingsPath = Join-Path $claude 'settings.json'
 $blockPattern = [regex]::Escape($begin) + '(?s)(.*?)' + [regex]::Escape($end)
 
@@ -49,6 +51,13 @@ if (Test-Path (Join-Path $skillDst 'SKILL.md')) {
     if ($sameSkill -and $samePath) { $skillState = '최신' } else { $skillState = '옛 버전' }
 }
 
+$ctState = '없음'
+if (Test-Path (Join-Path $ctDst 'SKILL.md')) {
+    $sameSkill = (Read-Text (Join-Path $ctDst 'SKILL.md')) -eq (Read-Text (Join-Path $setup 'skills\coding-test\SKILL.md'))
+    $samePath = (Read-Text (Join-Path $ctDst 'repo_path.txt')) -eq $repo
+    if ($sameSkill -and $samePath) { $ctState = '최신' } else { $ctState = '옛 버전' }
+}
+
 $settings = $null
 if (Test-Path $settingsPath) {
     $raw = [IO.File]::ReadAllText($settingsPath)
@@ -67,6 +76,7 @@ if ($settings -and $settings.PSObject.Properties['hooks'] -and $settings.hooks.P
 
 Write-Host "전역 규칙(CLAUDE.md 블록): $mdState"
 Write-Host "/til 스킬: $skillState"
+Write-Host "코테 스킬(coding-test): $ctState"
 Write-Host "세션 이름 훅: $hookState"
 
 if ($Check) { return }
@@ -96,6 +106,12 @@ New-Item -ItemType Directory -Force $skillDst | Out-Null
 Copy-Item (Join-Path $setup 'skills\til\*') $skillDst -Recurse -Force
 [IO.File]::WriteAllText((Join-Path $skillDst 'repo_path.txt'), $repo, $utf8)
 Write-Host "/til 스킬 설치: $skillDst (레포: $repo)"
+
+# 2-1. 코테 스킬과 이 레포 경로 (기록은 이 레포의 coding-test/log.md)
+New-Item -ItemType Directory -Force $ctDst | Out-Null
+Copy-Item (Join-Path $setup 'skills\coding-test\*') $ctDst -Recurse -Force
+[IO.File]::WriteAllText((Join-Path $ctDst 'repo_path.txt'), $repo, $utf8)
+Write-Host "코테 스킬 설치: $ctDst (레포: $repo)"
 
 # 3. 세션 이름 리마인더 훅을 settings.json에 병합한다. 다른 설정과 훅은 그대로 둔다
 if ($hookState -ne '최신') {
