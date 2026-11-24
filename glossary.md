@@ -152,3 +152,11 @@
 | 코사인 유사도 | 두 숫자 배열이 얼마나 같은 방향인지로 뜻이 가까운지 재는 값 | 코사인 유사도(cosine similarity) | [2026-11-23](2026/November/11-23.md) |
 | YAML | JSON과 같은 내용을 괄호 대신 들여쓰기로 적는 설정 형식(.yml). GitHub Actions의 실행 지시서 | YAML | [2026-11-23](2026/November/11-23.md) |
 | 승인 게이트 | 실행이 생겨도 승인자가 허락해야 실제 작업이 도는 장치. 요청(실행 만들기)과 승인(허락)은 다른 행동 | 환경 승인(environment required reviewers) | [2026-11-23](2026/November/11-23.md) |
+| DDoS | 좀비 PC 여러 대가 떼거지로 한 곳을 공격하는 서비스 거부. 한 대면 DoS | 분산 서비스 거부(DDoS, Distributed Denial of Service) | [2026-11-24](2026/November/11-24.md) |
+| C&C 서버 | 공격자가 좀비 PC들에게 명령을 내리는 통로. IRC 채팅 서버가 악용되기도 함 | 명령 제어 서버(Command & Control server) | [2026-11-24](2026/November/11-24.md) |
+| ICMP | 네트워크 상태를 확인하고 오류를 알리는 3계층 프로토콜. ping이 쓴다 | 인터넷 제어 메시지 프로토콜(Internet Control Message Protocol) | [2026-11-24](2026/November/11-24.md) |
+| 브로드캐스트 주소 | 1개 보내면 그 네트워크의 모두가 받는 주소 | 브로드캐스트 주소(broadcast address) | [2026-11-24](2026/November/11-24.md) |
+| 스머핑 | 출발지를 피해자 IP로 속여 응답 n개를 피해자에게 몰아주는 공격 | 스머핑(smurfing), 증폭형 DoS | [2026-11-24](2026/November/11-24.md) |
+| 증폭기 | 요청 1개를 응답 n개로 불려 주는 네트워크. 정상 기능을 악용한 것 | 증폭 네트워크(amplifier network) | [2026-11-24](2026/November/11-24.md) |
+| 방화벽 | 보안 정책에 따라 통과시키거나 막는 침입 차단 장치 | 방화벽(firewall) | [2026-11-24](2026/November/11-24.md) |
+| whitelist · blacklist | 허용 목록에 없으면 차단 · 차단 목록에 없으면 허용 | 화이트리스트(whitelist) · 블랙리스트(blacklist) 정책 | [2026-11-24](2026/November/11-24.md) |
