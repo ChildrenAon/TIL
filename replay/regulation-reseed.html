@@ -354,6 +354,9 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { clearTimeout(timer); timer = null; }
   else if (!timer) timer = setTimeout(frame, 600);
 });
+// 주소 끝 #step-N이 있으면 그 단계부터 재생한다(TIL 날짜 기록에서 바로 그 단계로 오도록)
+const startStep = /^#step-(\d)$/.exec(location.hash);
+if (startStep) { const i = timeline.findIndex((f) => steps[f.si] && steps[f.si].n === +startStep[1]); if (i >= 0) idx = i; }
 frame();
 </script>
 </body>
