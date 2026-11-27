@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>규정 문서 반영 복습</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* ONE Student 규정 문서 반영을 단계별로 재생하는 복습 페이지. 레일 → 무대(장면 + 지금 장면 한 줄) → 질문 2~3개 */
+:root {
+  --bg: #f3f5f9; --panel: #ffffff; --fg: #1b2233; --muted: #5d6679; --line: #d9dee8;
+  --ink: #2a3f8f; --ink-soft: #e4e9f8; --stamp: #c2402a; --stamp-soft: #fbe6e1; --ok: #2f7d55; --wait: #a8730b;
+  --code-bg: #eef1f7;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11141b; --panel: #191d27; --fg: #e3e7f0; --muted: #9aa3b6; --line: #2c3343;
+    --ink: #93a7ff; --ink-soft: #232b48; --stamp: #ff8a6b; --stamp-soft: #3a211c; --ok: #6fcf9c; --wait: #e0b44c;
+    --code-bg: #1f2431; color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body);
+  font-size: 15px; line-height: 1.6;
+  padding: 20px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px));
+}
+.wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 14px; }
+h1 { font-size: 1.3rem; margin: 0; }
+h1 small { font-size: 0.8rem; font-weight: 400; color: var(--muted); margin-left: 6px; }
+h2 { font-size: 1.05rem; margin: 0; }
+code, .mono { font-family: var(--font-mono); font-size: 0.86em; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+a { color: var(--ink); }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* 레일: 번호 · 이름 · 상태 점 */
+.rail { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; list-style: none; margin: 0; padding: 0; }
+.rail button { width: 100%; text-align: left; border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 7px 10px; display: flex; gap: 8px; align-items: baseline; }
+.rail .num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+.rail .nm { font-weight: 700; font-size: 0.88rem; line-height: 1.3; flex: 1; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; align-self: center; background: var(--line); }
+.rail button[data-status="done"] .dot { background: var(--ok); }
+.rail button[data-status="doing"] .dot { background: var(--ink); }
+.rail button[data-status="todo"] { opacity: 0.55; border-style: dashed; }
+.rail button[aria-current="step"] { border-color: var(--ink); box-shadow: inset 0 -3px 0 var(--ink); opacity: 1; }
+
+/* 무대 */
+.stage { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
+.verdict { margin: 4px 0 0; max-width: 62ch; color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 5px 13px; font-size: 0.86rem; }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--panel); font-weight: 700; }
+.btn[aria-pressed="true"] { background: var(--stamp-soft); border-color: var(--stamp); color: var(--stamp); }
+.scene { display: grid; gap: 10px; min-width: 0; }
+.now { margin: 0; padding: 8px 12px; border-radius: 8px; background: var(--ink-soft); font-weight: 500; min-height: 2.4em; }
+.now .k { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink); margin-right: 6px; }
+
+[data-at] { transition: opacity .45s ease, transform .45s ease; }
+[data-at].off { opacity: 0.12; transform: translateY(6px); }
+@media (prefers-reduced-motion: reduce) { [data-at], .piece, .cut, .cut::after, .len { transition: none !important; } }
+
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+.arrow { align-self: center; color: var(--muted); font-family: var(--font-mono); }
+.box { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; background: var(--bg); min-width: 0; flex: 1 1 170px; }
+.box .lbl { font-size: 0.7rem; letter-spacing: 0.06em; color: var(--muted); display: block; margin-bottom: 3px; }
+.box.hl { border-color: var(--ink); background: var(--ink-soft); }
+.box.warn { border-color: var(--stamp); background: var(--stamp-soft); }
+.ex { font-size: 0.7rem; color: var(--stamp); border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; margin-left: 3px; white-space: nowrap; }
+.pill { font-size: 0.78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid var(--wait); color: var(--wait); }
+.stamp { display: inline-block; border: 2px solid var(--stamp); color: var(--stamp); font-weight: 700; padding: 2px 10px; border-radius: 6px; transform: rotate(-6deg); letter-spacing: 0.1em; }
+
+.rows { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: 0.78rem; }
+td.mono { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.steps19 { display: grid; grid-template-columns: repeat(19, minmax(26px, 1fr)); gap: 3px; min-width: 560px; }
+.steps19 button { border: 1px solid var(--line); border-radius: 4px; text-align: center; font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 0; background: var(--bg); }
+.steps19 .s18 { border-color: var(--ink); background: var(--ink-soft); font-weight: 600; }
+.steps19 .fail { border-color: var(--stamp); background: var(--stamp-soft); color: var(--stamp); }
+.steps19 .dead { opacity: 0.3; text-decoration: line-through; }
+
+.doc { font-family: var(--font-mono); font-size: 0.8rem; display: grid; }
+.piece { border-left: 3px solid transparent; padding: 0 10px; position: relative; transition: margin .45s ease, border-color .45s ease, background .45s ease; }
+.piece .ln { white-space: pre-wrap; overflow-wrap: anywhere; }
+.len { position: absolute; right: 8px; top: 4px; font-size: 0.72rem; color: var(--ink); opacity: 0; transition: opacity .3s; }
+.cut { height: 0; border-top: 1px dashed transparent; position: relative; transition: border-color .3s; }
+.cut::after { content: "✂"; position: absolute; left: -2px; top: -0.8em; font-size: 0.85rem; color: var(--stamp); opacity: 0; transition: opacity .3s; }
+.doc.f2 .cut { border-top-color: var(--stamp); }
+.doc.f2 .cut::after { opacity: 1; }
+.doc.f3 .piece { margin: 5px 0; border-left-color: var(--ink); background: var(--ink-soft); border-radius: 4px; padding-block: 5px; padding-right: 64px; }
+.doc.f3 .len { opacity: 1; }
+.h1line { transition: opacity .45s ease; }
+.doc.f1 .h1line, .doc.f2 .h1line, .doc.f3 .h1line { opacity: 0.25; text-decoration: line-through; }
+.note { font-size: 0.82rem; color: var(--muted); margin: 0; }
+
+.todo { border: 1px dashed var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 4px; }
+
+details { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0 14px; }
+details[open] { padding-bottom: 10px; }
+summary { padding: 10px 0; font-weight: 700; cursor: pointer; }
+details p, details ul { margin: 6px 0; max-width: 70ch; }
+details ul { padding-left: 1.2em; }
+.folds { display: grid; gap: 8px; }
+footer { font-size: 0.78rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>규정 문서 반영 복습<small>ONE Student</small></h1>
+  <ol class="rail" id="rail"></ol>
+
+  <section class="stage">
+    <div class="head">
+      <div style="min-width:0">
+        <h2 id="title"></h2>
+        <p class="verdict" id="verdict"></p>
+      </div>
+      <div class="controls">
+        <button class="btn primary" id="play" type="button">▶ 재생</button>
+        <span id="extra" class="controls"></span>
+      </div>
+    </div>
+    <div class="scene" id="scene"></div>
+    <p class="now" id="now" aria-live="polite"></p>
+  </section>
+
+  <section class="folds" id="folds"></section>
+
+  <footer>값은 저장소 파일로 직접 잰 것이고, <span class="ex">예시</span>는 모양만 보여 주는 값. ← → 로 단계 이동. <a id="src" href="#" target="_blank" rel="noopener">이 단계 TIL 기록</a></footer>
+</div>
+
+<script>
+const TIL = 'https://github.com/ChildrenAon/TIL/blob/main/2026/November/';
+const CODE = 'https://github.com/ONE-Student-WKU/web/blob/develop/';
+
+const steps = [
+  {
+    n: 1, name: '상황과 값', status: 'done', src: TIL + '11-23.md#1-규정-문서는-검색할-조각과-숫자-배열로-db에-남는다',
+    verdict: '규정 문서 하나 → 문서 1행 + 조각 N행(조각마다 숫자 배열). 챗봇은 그 조각을 찾아 답한다.',
+    caps: ['규정 문서 하나에서 시작', '문서 정보는 regulation_documents에 1행', '본문은 조각 6개, 조각마다 임베딩(숫자 배열) → regulation_chunks 6행', '챗봇은 질문과 뜻이 가까운 조각을 찾아 답한다 (RAG)'],
+    scene: () => `
+      <div class="flow">
+        <div class="box" data-at="0"><span class="lbl">입력 파일</span><code>db/regulations/졸업/조기졸업.md</code></div>
+        <span class="arrow" data-at="1">→</span>
+        <div class="box hl" data-at="1"><span class="lbl">regulation_documents · 1행</span><span class="mono">{ id: 12<span class="ex">예시</span>, title: '조기졸업', category: '졸업' }</span></div>
+      </div>
+      <div class="rows" data-at="2"><table>
+        <thead><tr><th>chunk_index</th><th>content (앞부분)</th><th>embedding <span class="ex">예시</span></th></tr></thead>
+        <tbody>${[['0','출처: https://www.wku.ac.kr/…'],['1','## 관련규정'],['2','### 1. 조기졸업 정의'],['3','### 2. 조기졸업 신청 성적기준'],['4','### 3. 조기졸업 신청 제한'],['5','### 4. 유의사항']]
+          .map(([i,c]) => `<tr><td class="mono">${i}</td><td>${c}</td><td class="mono">[0.008, -0.029, …]</td></tr>`).join('')}</tbody>
+      </table></div>
+      <div class="flow" data-at="3">
+        <div class="box"><span class="lbl">질문</span>조기졸업하려면 평점이 몇이어야 해?</div>
+        <span class="arrow">→</span>
+        <div class="box hl"><span class="lbl">찾은 조각</span>chunk 3 · 신청 성적기준</div>
+        <span class="arrow">→</span>
+        <div class="box"><span class="lbl">답변</span>그 조각을 근거로 AI가 답함</div>
+      </div>`,
+    folds: [
+      ['없으면 무슨 일이 생기나?', `<p>문서를 고쳐도 DB에는 옛 조각 → 챗봇이 옛 규정으로 답함. 그래서 코드 배포와 따로 도는 반영 길이 있다.</p>`],
+      ['헷갈리기 쉬운 점', `<ul><li>바뀐 문서만 갈아끼우지 않는다. 하나만 고쳐도 <b>전체</b>를 다시 임베딩(<code>--force</code>)</li><li>트랜잭션은 전체가 아니라 <b>문서 하나</b> 단위</li><li>임베딩은 정하는 값이 아니라 Voyage AI에서 <b>받는</b> 값</li></ul>`],
+    ],
+  },
+  {
+    n: 2, name: '반영 시작', status: 'done', src: TIL + '11-23.md#2-재시딩은-main-push로-실행이-생기고-승인해야-돈다',
+    verdict: 'main에 규정 경로 파일이 push되면 실행이 생기고, db-reseed 승인을 받아야 돈다.',
+    caps: ['main push, 바뀐 파일이 paths(db/regulations/** 등)에 걸림', '실행이 생기고 Waiting으로 멈춤', 'db-reseed 승인자가 Approve 한 번', '그제야 step 시작: Railway 배포 → 재시딩 → 결과 확인', 'develop 머지 · 코드만 바꾼 push는 실행이 아예 안 생김'],
+    scene: () => `
+      <div class="flow">
+        <div class="box" data-at="0"><span class="lbl">요청 (자동)</span>main push<br><code>db/regulations/**</code></div>
+        <span class="arrow" data-at="1">→</span>
+        <div class="box" data-at="1"><span class="lbl">GitHub Actions</span>실행 생성 <span class="pill">Waiting</span></div>
+        <span class="arrow" data-at="2">→</span>
+        <div class="box" data-at="2" style="display:grid;place-items:center"><span class="stamp">승인</span></div>
+        <span class="arrow" data-at="3">→</span>
+        <div class="box hl" data-at="3"><span class="lbl">step 시작</span>배포 → 재시딩 → 결과 확인</div>
+      </div>
+      <div class="box warn" data-at="4"><span class="lbl">실행이 안 생김</span>develop 머지 · 코드만 바꾼 push → 운영 반영 시점은 <b>main</b></div>`,
+    folds: [
+      ['왜 승인을 거치나? 버린 방법은?', `<ul><li>승인 없이 바로 → 실수로 올린 문서도 즉시 반영, 비용도 즉시</li><li>운영 서버에서 seed 직접 → 기록 없음, 전체 seed를 잘못 치면 가짜 학생 계정이 운영 DB에</li></ul>`],
+      ['실패하면? (실제로 있었던 일)', `<p>적용범위 파일이 <code>paths</code>에 없음 → 재시딩이 시작조차 안 됨, 에러도 없음 → 경로 추가 + PR마다 경로 누락을 경고하는 <b>DB Reseed Guard</b>.</p>`],
+      ['면접에서 한 마디로', `<p>규정 문서 재시딩은 코드 배포와 따로 돕니다. main에 규정 경로 파일이 올라오면 실행이 자동으로 생기지만, 전체를 다시 임베딩하는 작업이라 GitHub 환경 승인을 거쳐야 돌게 했습니다. 경로를 빠뜨려 조용히 안 돈 일이 있어 PR마다 경로 누락을 경고하는 검사도 붙였습니다.</p>`],
+    ],
+  },
+  {
+    n: 3, name: '실행', status: 'done', src: TIL + '11-24.md#one-student',
+    verdict: 'Actions는 승인된 커밋을 railway up으로 올리기만 하고, 빌드와 19단계 재시딩은 Railway가 한다.',
+    caps: ['Actions가 승인된 main 커밋을 railway up으로 올림', 'Railway가 빌드 (DB는 아직 그대로)', 'Start Command로 프로세스 시작', '19단계를 && 로 차례로. 규정 임베딩은 18단계뿐 (칸을 누르면 뜻)', '끝나면 프로세스는 사라지고 설정만 남음 (Cron Job)'],
+    extra: () => `<button class="btn" id="fail17" type="button" aria-pressed="false">17단계 실패시키기</button>`,
+    scene: () => `
+      <div class="flow">
+        <div class="box" data-at="0"><span class="lbl">GitHub Actions</span><code>railway up</code></div>
+        <span class="arrow" data-at="1">→</span>
+        <div class="box" data-at="1"><span class="lbl">Railway</span>빌드 (작업은 아직)</div>
+        <span class="arrow" data-at="2">→</span>
+        <div class="box" data-at="2"><span class="lbl">Railway</span>Start Command → 프로세스</div>
+      </div>
+      <div class="rows" data-at="3"><div class="steps19" id="s19">${Array.from({length: 19}, (_, i) => `<button type="button" class="${i === 17 ? 's18' : ''}" data-s="${i + 1}">${i + 1}</button>`).join('')}</div></div>
+      <div class="box" data-at="4"><span class="lbl">Cron Job</span>남는 것 = 설정 / 사라지는 것 = 실행(프로세스). 스케줄이 비어 있어 새로 배포될 때 한 번 돈다.</div>`,
+    folds: [
+      ['처음엔 다른 명령을 썼다. 무엇을 버렸고 왜?', `<ul><li><code>redeploy</code> → 옛 빌드를 다시 돌림, 승인한 커밋이 안 쓰임 (실제로 있었음)</li><li><code>up --detach</code> → 배포가 끝나기 전에 아직 안 돈 실행의 로그를 읽음</li><li><code>up</code> 뒤에 <code>redeploy</code> → 재시딩이 두 번, 로그가 섞임</li></ul>`],
+      ['앞 단계가 실패하면 18단계는 돌면 안 되나?', `<ul><li>1단계(테이블 최신화) 실패 → 안 됨, 테이블이 안 맞을 수 있음</li><li>17단계(개설과목) 실패 → 돌아도 됨, <code>&amp;&amp;</code>로 묶여 같이 막힌 것 (위 버튼으로 재현)</li><li>18단계는 앞 단계 결과가 아니라 규정 파일을 직접 읽는다</li></ul>`],
+      ['면접에서 한 마디로', `<p>Actions는 승인된 커밋을 Railway에 올리기만 하고 빌드와 재시딩은 Railway가 합니다. 처음엔 redeploy를 썼는데 기존 빌드를 다시 돌릴 뿐이라 승인한 커밋이 반영된다는 보장이 없어, 그 커밋을 직접 올려 새로 빌드하는 up으로 바꿨습니다.</p>`],
+    ],
+  },
+  {
+    n: 4, name: '문서 쪼개기', status: 'doing', src: CODE + 'server/scripts/seedRegulations.js#L60-L111',
+    verdict: '정리 문서는 ## · ### 소제목마다, 학칙 원문은 "제N조" · "【별표 N】"마다 자른다.',
+    caps: ['문서 전체를 읽는다', '"# 제목" 줄은 조각에서 빼고 문서 제목으로만 쓴다', '경계(소제목 / 제N조)마다 자른다', '경계 사이가 조각 하나. 첫 경계 앞 글(머리말)도 조각 하나'],
+    extra: () => `<button class="btn" id="mode" type="button" aria-pressed="false">학칙 원문으로 보기</button>`,
+    scene: () => `<div id="docwrap"></div><p class="note">실측: 정리 문서 77개 → 1,194조각(보통 500자쯤) · 학칙 127 · 시행규칙 144 · 수업관리규정 22조각</p>`,
+    folds: [
+      ['다른 방법으로 자를 수도 있었다. 왜 이 방법인가?', `<ul><li>글자 수로 자르기 → 조문이 중간에 끊김 ("평균평점이" | "4.3 이상")</li><li>AI에게 맡기기 → 돌릴 때마다 결과가 다를 수 있고 비용</li><li><b>소제목 · 조 단위</b> → 문서에 있는 구조 그대로, 같은 파일이면 늘 같은 조각. 대신 길이가 들쭉날쭉</li></ul>`],
+      ['함정', `<ul><li>별표 경계가 없으면 부칙 마지막 조에 별표 표 전체가 붙어 조각 하나가 수만 자</li><li>제목을 지우는 정규식은 LF에서만 맞음 → Windows(CRLF)에서 로컬 시드를 돌리면 첫 조각에 <code># 조기졸업</code>이 남음</li></ul>`],
+    ],
+  },
+  { n: 5, name: '임베딩 받기', status: 'todo', verdict: 'Voyage AI가 조각마다 숫자 배열을 돌려준다. 실패하면 재시도.', todo: '코드에서 본 것만: 조각을 6,000자씩 묶어 요청, 시드용은 최대 6번 재시도 · 한 번에 60초까지 기다림.' },
+  { n: 6, name: '바꿔 넣기', status: 'todo', verdict: '문서마다 한 트랜잭션으로 옛 조각 삭제 + 새 조각 저장.', todo: '임베딩을 먼저 다 받은 뒤 바꿔 넣어, 실행 중에도 검색에서 빠지는 문서가 없다.' },
+  { n: 7, name: '성공 판정과 챗봇 반영', status: 'todo', verdict: 'Actions가 로그로 성공 판정, 챗봇에는 최대 약 5분 뒤 반영.', todo: '공부하면서 채운다.' },
+];
+
+const STEP19 = { 1: '테이블 최신화', 17: '개설과목 (학사 데이터)', 18: '규정 임베딩 → 챗봇', 19: '규정 조문 표' };
+const docs = {
+  curated: { title: '조기졸업', from: '# 제목 줄에서', pieces: [
+    { h1: 1, lines: ['# 조기졸업'] },
+    { len: 102, lines: ['출처: https://www.wku.ac.kr/…', '담당부서: 학사지원과'] },
+    { len: 39, lines: ['## 관련규정', '◎ 학칙 제6조(수업년한) 제2항…'] },
+    { len: 59, lines: ['### 1. 조기졸업 정의', '학업이 우수한 자에게 수업년한을 1～2학기 단축…'] },
+    { len: 125, lines: ['### 2. 조기졸업 신청 성적기준', '…평균평점이 4.3이상인 학생…'] },
+    { len: 225, lines: ['### 3. 조기졸업 신청 제한', '- 학사경고자 및 징계처분을 받은 학생 …'] },
+    { len: 203, lines: ['### 4. 유의사항', '- 신청학기 평균평점이 기준 미달이면 승인 취소 …'] },
+  ] },
+  verbatim: { title: '원광대학교 학칙 전문', from: '파일 이름 → 제목 표에서', pieces: [
+    { lines: ['(머리말: 문서 이름 · 개정 이력)'] },
+    { lines: ['제1조(목적) 이 학칙은 원광대학교의 교육목표를…'] },
+    { lines: ['제2조(교육목표) 본 대학교는 대한민국의 교육이념과…'] },
+    { lines: ['… 조마다 한 조각'] },
+    { lines: ['【별표 1】 (학과별 입학정원 같은 표)'] },
+  ] },
+};
+
+let cur = 0, timer = null, mode = 'curated', failed = false;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+function renderRail() {
+  $('rail').innerHTML = steps.map((s, i) => `<li><button type="button" data-i="${i}" data-status="${s.status}" ${i === cur ? 'aria-current="step"' : ''}><span class="num">${s.n}</span><span class="nm">${s.name}</span><span class="dot" title="${{ done: '공부 끝', doing: '공부 중', todo: '공부 전' }[s.status]}"></span></button></li>`).join('');
+  $('rail').querySelectorAll('button').forEach((b) => b.onclick = () => go(+b.dataset.i));
+}
+
+function renderDoc() {
+  const d = docs[mode], skip = mode === 'curated' ? 1 : 0;
+  $('docwrap').innerHTML = `<p class="note" data-at="1">문서 제목 → <b>${d.title}</b> (${d.from} 꺼냄)</p>
+    <div class="doc" id="doc">${d.pieces.map((p, i) => `${i > skip ? '<div class="cut"></div>' : ''}<div class="${p.h1 ? 'h1line' : 'piece'}">${p.lines.map((l) => `<div class="ln">${esc(l)}</div>`).join('')}${p.len ? `<span class="len">${p.len}자</span>` : ''}</div>`).join('')}</div>`;
+}
+
+function setNow(k, text) { $('now').innerHTML = (k == null ? '' : `<span class="k">${k}/${steps[cur].caps.length}</span>`) + text; }
+
+function setFrame(k, rest) {
+  document.querySelectorAll('#scene [data-at]').forEach((el) => el.classList.toggle('off', +el.dataset.at > k));
+  const doc = $('doc');
+  if (doc) { doc.classList.remove('f1', 'f2', 'f3'); if (k >= 1) doc.classList.add('f' + Math.min(k, 3)); }
+  const s = steps[cur];
+  if (rest) setNow(null, '전체 모습이에요. ▶ 재생을 누르면 한 장면씩 보여 줘요.');
+  else setNow(k + 1, s.caps[k]);
+}
+
+function applyFail() {
+  document.querySelectorAll('#s19 button').forEach((b) => {
+    const n = +b.dataset.s;
+    b.classList.toggle('fail', failed && n === 17);
+    b.classList.toggle('dead', failed && n > 17);
+    b.textContent = failed && n === 17 ? '✕' : n;
+  });
+  if (failed) setNow(null, '17단계(개설과목) 실패 → && 라서 규정 반영(18)까지 막힘 → 챗봇이 옛 규정으로 답함. 실제로 있었던 일이에요.');
+}
+
+function render() {
+  const s = steps[cur];
+  stop(); failed = false;
+  renderRail();
+  $('title').textContent = `${s.n}단계 · ${s.name}`;
+  $('verdict').textContent = s.verdict;
+  $('extra').innerHTML = s.extra ? s.extra() : '';
+  $('play').hidden = !s.scene;
+  $('scene').innerHTML = s.scene ? s.scene() : `<div class="todo"><b>아직 공부 전</b><span>${s.todo}</span></div>`;
+  if (s.n === 4) renderDoc();
+  $('folds').innerHTML = (s.folds || []).map(([q, a]) => `<details><summary>${q}</summary>${a}</details>`).join('');
+  $('src').hidden = !s.src; if (s.src) $('src').href = s.src;
+  const f = $('fail17');
+  if (f) f.onclick = () => { failed = !failed; f.setAttribute('aria-pressed', String(failed)); applyFail(); if (!failed) setFrame(4, true); };
+  document.querySelectorAll('#s19 button').forEach((b) => b.onclick = () => {
+    const n = +b.dataset.s;
+    setNow(null, `${n}단계: ${STEP19[n] || (n >= 2 && n <= 17 ? '학사 데이터를 파일 기준으로 표에 다시 저장' : '')}`);
+  });
+  const m = $('mode');
+  if (m) m.onclick = () => {
+    mode = mode === 'curated' ? 'verbatim' : 'curated';
+    m.setAttribute('aria-pressed', String(mode === 'verbatim'));
+    m.textContent = mode === 'verbatim' ? '정리 문서로 보기' : '학칙 원문으로 보기';
+    stop(); renderDoc(); setFrame(3, true);
+  };
+  if (s.caps) setFrame(s.caps.length - 1, true); else $('now').textContent = '공부하면 이 단계 장면을 채워요.';
+  try { history.replaceState(null, '', '#step-' + s.n); } catch (e) {}
+}
+
+function stop() { clearTimeout(timer); timer = null; $('play').textContent = '▶ 재생'; }
+function play() {
+  const s = steps[cur]; stop(); $('play').textContent = '■ 멈춤';
+  let k = 0;
+  const tick = () => { setFrame(k, false); if (k < s.caps.length - 1) { k++; timer = setTimeout(tick, 2200); } else timer = setTimeout(stop, 2200); };
+  tick();
+}
+function go(i) { cur = Math.max(0, Math.min(steps.length - 1, i)); render(); }
+
+$('play').onclick = () => (timer ? stop() : play());
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest('summary')) return;
+  if (e.key === 'ArrowRight') go(cur + 1);
+  if (e.key === 'ArrowLeft') go(cur - 1);
+});
+const fromHash = () => { const m = /^#step-(\d)$/.exec(location.hash); const i = m ? steps.findIndex((s) => s.n === +m[1]) : -1; return i >= 0 ? i : steps.findIndex((s) => s.status === 'doing'); };
+window.addEventListener('hashchange', () => { const i = fromHash(); if (i !== cur) go(i); });
+cur = fromHash();
+render();
+</script>
+</body>
+</html>
