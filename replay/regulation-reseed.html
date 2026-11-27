@@ -41,7 +41,7 @@ button, select { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 /* 진행 막대 (단계를 누르면 그 단계 처음으로) */
-.progress { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.progress { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
 .seg { display: grid; gap: 4px; font-size: 0.75rem; color: var(--muted); min-width: 0; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; }
 .seg .bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
 .seg .bar i { display: block; height: 100%; width: 0; background: var(--ink); transition: width .4s ease; }
@@ -224,11 +224,89 @@ const steps = [
         <div class="box hl" data-at="1"><span class="lbl">학칙 원문 (.txt) · 조마다</span>
           <div class="ck"><div>제1조(목적) …</div><div>제2조(교육목표) …</div><div class="more">… 학칙은 127조각</div></div></div>
       </div>
-      <div class="box warn" data-at="2"><span class="lbl">버린 방법: 글자 수로 자르기</span><div class="badcut"><span>…평균평점이</span> ✂ <span>4.3이상인 학생…</span></div></div>`,
+      <div class="box warn" data-at="2"><span class="lbl">버린 방법: 글자 수로 자르기</span><div class="badcut"><span>…평균평점이</span> ✂ <span>4.3이상인 학생…</span></div></div>
+      <div class="flow" data-at="3">
+        <div class="box"><span class="lbl">학칙 조각</span>127조각</div>
+        <span class="arrow">→</span>
+        <div class="box hl"><span class="lbl">묶기 · 합계 6,000자 직전까지</span>10묶음 = 요청 10번</div>
+      </div>
+      <div class="box warn" data-at="4"><span class="lbl">버린 방법</span>조각마다 보내기 → 분당 3번 한도로 느림 / 통째로 보내기 → 분당 1만 토큰 초과로 영원히 실패</div>`,
     frames: [
       { at: 0, sub: '정리 문서는 ## · ### 소제목이 나올 때마다 자른다' },
       { at: 1, sub: '학칙 원문은 "제N조"가 나올 때마다 자른다' },
       { at: 2, sub: '글자 수로 자르면 조문이 중간에 끊긴다. 그래서 문서에 이미 있는 구조로 자른다' },
+      { at: 3, sub: '자른 조각은 합계 6,000자가 넘기 직전까지 한 묶음으로. 묶음 하나가 요청 한 번' },
+      { at: 4, sub: '잘게 보내면 요청 수 한도, 통째로 보내면 토큰 수 한도에 걸려서 중간 크기로 묶는다' },
+    ],
+  },
+  {
+    n: 5, name: '임베딩 받기',
+    html: `
+      <div class="flow">
+        <div class="box" data-at="0"><span class="lbl">묶음 하나</span>조각 글 여러 개 · <code>document</code></div>
+        <span class="arrow" data-at="1">→</span>
+        <div class="box" data-at="1"><span class="lbl">Voyage</span>숫자 배열을 계산해 돌려줌</div>
+        <span class="arrow" data-at="2">→</span>
+        <div class="box hl" data-at="2"><span class="lbl">getEmbeddings</span>index 순서로 정렬 → 숫자 배열 목록</div>
+      </div>
+      <div class="flow">
+        <div class="box" data-at="3"><span class="lbl">기다리면 풀리는 실패</span>시간 초과 · 끊김 · 5xx · 429 → 재시도 (시딩 6번까지)</div>
+        <div class="box warn" data-at="4"><span class="lbl">요청이 틀린 실패</span>400 (빈 입력 등) → 바로 실패</div>
+      </div>
+      <div class="box" data-at="5"><span class="lbl">같은 함수를 챗봇도 씀</span>학생 질문 1개 · <code>query</code> · 학생이 기다리니 재시도 2번만</div>`,
+    frames: [
+      { at: 0, sub: '묶음 하나를 Voyage에 보낸다. 문서 조각이니 타입은 document' },
+      { at: 1, sub: 'Voyage가 조각마다 숫자 배열을 계산해 돌려준다' },
+      { at: 2, sub: '받은 결과를 index 순서로 정렬해, 보낸 조각 순서와 같은 숫자 배열 목록으로 만든다' },
+      { at: 3, sub: '시간 초과 · 5xx · 429는 Voyage 쪽 사정이라 기다렸다 다시 보낸다' },
+      { at: 4, sub: '400은 우리 요청이 틀린 것이라 다시 보내도 같다. 바로 멈춘다' },
+      { at: 5, sub: '챗봇도 같은 함수로 질문 하나만 임베딩한다. 문서 배열은 DB에 저장된 걸 쓴다' },
+    ],
+  },
+  {
+    n: 6, name: '바꿔 넣기',
+    html: `
+      <div class="flow">
+        <div class="box" data-at="0"><span class="lbl">먼저</span>임베딩 전부 받음 (DB는 그대로)</div>
+        <span class="arrow" data-at="1">→</span>
+        <div class="box" data-at="1"><span class="lbl">트랜잭션 시작</span>연결 하나를 빌림</div>
+        <span class="arrow" data-at="2">→</span>
+        <div class="box" data-at="2"><span class="lbl">DELETE</span>옛 문서 → 옛 조각도 CASCADE</div>
+        <span class="arrow" data-at="3">→</span>
+        <div class="box hl" data-at="3"><span class="lbl">INSERT → commit</span>새 문서 + 조각, 한 번에 반영</div>
+      </div>
+      <div class="box warn" data-at="4"><span class="lbl">순서를 바꿨다면</span>옛 문서를 먼저 지우고 임베딩 → 실패하면 그 문서가 검색에서 빠짐</div>`,
+    frames: [
+      { at: 0, sub: '임베딩을 전부 받을 때까지 DB는 건드리지 않는다' },
+      { at: 1, sub: '연결 하나를 빌려 트랜잭션을 연다. commit 전까지 변경은 보류' },
+      { at: 2, sub: '옛 문서 1행을 지우면 조각들은 CASCADE로 같이 지워진다. 챗봇은 아직 옛 문서를 본다' },
+      { at: 3, sub: '새 문서와 조각을 넣고 commit. 이 순간 옛 → 새가 한 번에 바뀐다' },
+      { at: 4, sub: '그래서 임베딩이 실패해도 옛 문서가 그대로 남는다' },
+    ],
+  },
+  {
+    n: 7, name: '성공 판정과 챗봇 반영',
+    html: `
+      <div class="flow">
+        <div class="box" data-at="0"><span class="lbl">Actions</span>30초마다 재시딩 로그를 다시 읽음</div>
+        <span class="arrow" data-at="1">→</span>
+        <div class="box hl" data-at="1"><span class="lbl">판정</span>"실패:" 보이면 ✗ / 마지막 단계 완료면 ✓</div>
+      </div>
+      <div class="flow" data-at="2">
+        <div class="box"><span class="lbl">10:00 <span class="ex">예시</span></span>캐시 채움 (옛 조각)</div>
+        <span class="arrow">→</span>
+        <div class="box"><span class="lbl">10:03</span>commit (DB는 새 조각)</div>
+        <span class="arrow">→</span>
+        <div class="box"><span class="lbl">10:05</span>캐시 만료</div>
+        <span class="arrow">→</span>
+        <div class="box hl"><span class="lbl">다음 질문</span>새 조각으로 답함</div>
+      </div>
+      <div class="box warn" data-at="3"><span class="lbl">실제로 있었던 일</span>로그를 한 번만 읽어 늘 성공 → 개설과목 실패로 규정 반영이 멈춘 게 가려짐</div>`,
+    frames: [
+      { at: 0, sub: '재시딩이 도는 동안 Actions는 30초마다 로그를 다시 받아 본다' },
+      { at: 1, sub: '실패 문구가 보이면 빨간 ✗, 마지막 단계 완료 문구가 보이면 성공' },
+      { at: 2, sub: '챗봇은 조각을 5분 동안 메모리에 둔다. commit 뒤 최대 5분 안에 새 조각을 쓴다' },
+      { at: 3, sub: '예전엔 로그를 한 번만 읽어서, 실패가 성공으로 가려진 적이 있다' },
     ],
   },
 ];
@@ -237,7 +315,10 @@ const summary = [
   ['1', '상황과 값', '문서 → DB 1행 + 조각 N행(임베딩). 챗봇은 가까운 조각으로 답함', '하나만 고쳐도 전체를 다시 임베딩'],
   ['2', '반영 시작', 'main push + 규정 경로 → 실행 생김 → 승인 → 재시딩', 'paths 누락 → 조용히 안 돎 → PR 경고'],
   ['3', '실행', 'railway up → 빌드 → Start Command → 19단계 &&', '17 실패 → 18 규정 반영도 막힘 / redeploy 버림'],
-  ['4', '문서 쪼개기', '정리 문서는 소제목, 원문은 제N조마다', '글자 수로 자르면 조문이 끊김 / Windows(CRLF) 로컬에선 제목 줄이 남음'],
+  ['4', '문서 쪼개기', '정리 문서는 소제목, 원문은 제N조마다 → 6,000자씩 묶어 요청', '글자 수로 자르면 조문이 끊김 / 빈 묶음은 Voyage 400'],
+  ['5', '임베딩 받기', '묶음 → Voyage → index 순서로 숫자 배열 목록', '400은 바로 실패, 끝내 실패하면 그 문서와 뒤 문서는 옛 버전'],
+  ['6', '바꿔 넣기', '임베딩 전부 → 트랜잭션: DELETE(CASCADE) → INSERT → commit', '옛 문서를 먼저 지우면 실패 때 검색에서 빠짐'],
+  ['7', '성공 판정과 챗봇 반영', 'Actions가 로그를 30초마다 읽어 판정, 챗봇은 캐시 5분', '로그를 한 번만 읽으면 실패가 성공으로 가려짐'],
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -247,15 +328,12 @@ function fail() {
   $('emb').classList.add('dead'); $('art').classList.add('dead');
 }
 
-$('sum').innerHTML = summary.map(([n, nm, a, b]) => `<div class="card"><h3><span>${n}</span>${nm}</h3><p>${a}</p><p><span class="k">주의</span>${b}</p></div>`).join('')
-  + `<div class="card todo"><h3><span>5~7</span>임베딩 받기 · 바꿔 넣기 · 성공 판정</h3><p>공부 전. 공부하면 이어 붙인다.</p></div>`;
+$('sum').innerHTML = summary.map(([n, nm, a, b]) => `<div class="card"><h3><span>${n}</span>${nm}</h3><p>${a}</p><p><span class="k">주의</span>${b}</p></div>`).join('');
 
 const timeline = [];
 steps.forEach((s, si) => s.frames.forEach((f, fi) => timeline.push({ si, fi, ...f })));
-timeline.push({ si: steps.length, fi: 0, end: true, sub: '5~7단계(임베딩 받기 · 바꿔 넣기 · 성공 판정)는 공부하면 이어 붙여요. 처음부터 다시 재생합니다' });
 
-$('progress').innerHTML = steps.map((s, i) => `<button class="seg" type="button" data-si="${i}"><span class="bar"><i></i></span><span class="nm">${s.n} ${s.name}</span></button>`).join('')
-  + `<button class="seg" type="button" data-si="${steps.length}"><span class="bar"><i></i></span><span class="nm">5~7 공부 전</span></button>`;
+$('progress').innerHTML = steps.map((s, i) => `<button class="seg" type="button" data-si="${i}"><span class="bar"><i></i></span><span class="nm">${s.n} ${s.name}</span></button>`).join('');
 
 let idx = 0, playing = true, timer = null, ms = 5500;
 try { const v = +localStorage.getItem('replay-ms'); if ([8000, 5500, 3500].includes(v)) ms = v; } catch (e) {}
