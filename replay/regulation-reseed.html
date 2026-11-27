@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* ONE Student 규정 문서 반영 복습. 열면 저절로 1~4단계를 장면마다 재생하고 반복한다. 누를 곳 없음. 아래 요약도 펼친 채로 둔다. */
+/* ONE Student 규정 문서 반영 복습. 저절로 장면마다 재생 · 반복, 플레이어 조작(이전 · 멈춤 · 다음 · 속도)만 둔다. 장면은 상자 몇 개로 간결하게. */
 :root {
   --bg: #f3f5f9; --panel: #ffffff; --fg: #1b2233; --muted: #5d6679; --line: #d9dee8;
-  --ink: #2a3f8f; --ink-soft: #e4e9f8; --stamp: #c2402a; --stamp-soft: #fbe6e1; --ok: #2f7d55; --wait: #a8730b;
+  --ink: #2a3f8f; --ink-soft: #e4e9f8; --stamp: #c2402a; --stamp-soft: #fbe6e1; --wait: #a8730b;
   --code-bg: #eef1f7;
   --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
@@ -20,7 +20,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #11141b; --panel: #191d27; --fg: #e3e7f0; --muted: #9aa3b6; --line: #2c3343;
-    --ink: #93a7ff; --ink-soft: #232b48; --stamp: #ff8a6b; --stamp-soft: #3a211c; --ok: #6fcf9c; --wait: #e0b44c;
+    --ink: #93a7ff; --ink-soft: #232b48; --stamp: #ff8a6b; --stamp-soft: #3a211c; --wait: #e0b44c;
     --code-bg: #1f2431; color-scheme: dark;
   }
 }
@@ -30,334 +30,288 @@ body {
   font-size: 15px; line-height: 1.6;
   padding: 20px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px));
 }
-.wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 16px; }
+.wrap { max-width: 860px; margin: 0 auto; display: grid; gap: 14px; }
 h1 { font-size: 1.3rem; margin: 0; }
 h1 small { font-size: 0.8rem; font-weight: 400; color: var(--muted); margin-left: 6px; }
+h2 { font-size: 1rem; margin: 6px 0 0; }
 code, .mono { font-family: var(--font-mono); font-size: 0.86em; }
 code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
 a { color: var(--ink); }
+button, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
-/* 진행 막대: 단계마다 한 칸, 지금 단계가 차오른다 */
+/* 진행 막대 (단계를 누르면 그 단계 처음으로) */
 .progress { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-.seg { display: grid; gap: 4px; font-size: 0.75rem; color: var(--muted); min-width: 0; }
+.seg { display: grid; gap: 4px; font-size: 0.75rem; color: var(--muted); min-width: 0; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; }
 .seg .bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
-.seg .bar i { display: block; height: 100%; width: 0; background: var(--ink); }
-.seg.done .bar i { width: 100%; }
+.seg .bar i { display: block; height: 100%; width: 0; background: var(--ink); transition: width .4s ease; }
 .seg.now { color: var(--fg); font-weight: 700; }
 .seg .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* 무대 */
 .stage { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
-.stage-top { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; justify-content: space-between; }
 .chip { font-weight: 700; color: var(--ink); }
-.verdict { color: var(--muted); font-size: 0.88rem; margin: 0; max-width: 62ch; }
-.scene { min-height: 330px; display: grid; align-content: start; gap: 10px; min-width: 0; }
-.sub {
-  margin: 0; padding: 12px 14px; border-radius: 10px; background: var(--fg); color: var(--panel);
-  font-size: 1.05rem; font-weight: 700; line-height: 1.45; min-height: 3.2em; display: flex; align-items: center;
-}
+.scene { min-height: 250px; display: grid; align-content: start; gap: 10px; min-width: 0; }
+.sub { margin: 0; padding: 12px 14px; border-radius: 10px; background: var(--fg); color: var(--panel); font-size: 1.05rem; font-weight: 700; line-height: 1.45; min-height: 3.2em; display: flex; align-items: center; }
+
+/* 플레이어 조작 */
+.player { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pbtn { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 5px 14px; cursor: pointer; font-size: 0.88rem; }
+.pbtn.main { background: var(--ink); border-color: var(--ink); color: var(--panel); font-weight: 700; min-width: 5.5em; }
+.speed { display: flex; gap: 4px; margin-left: auto; align-items: center; font-size: 0.8rem; color: var(--muted); }
+.speed button { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 3px 9px; cursor: pointer; font-size: 0.8rem; }
+.speed button[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); font-weight: 700; }
+.count { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
 
 [data-at] { transition: opacity .5s ease, transform .5s ease; }
 [data-at].off { opacity: 0; transform: translateY(8px); }
-[data-at].past { opacity: 0.45; }
 
 .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
 .arrow { align-self: center; color: var(--muted); font-family: var(--font-mono); }
-.box { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; background: var(--bg); min-width: 0; flex: 1 1 160px; }
+.box { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; background: var(--bg); min-width: 0; flex: 1 1 150px; transition: opacity .4s, background .4s, border-color .4s; }
 .box .lbl { font-size: 0.7rem; letter-spacing: 0.06em; color: var(--muted); display: block; margin-bottom: 3px; }
 .box.hl { border-color: var(--ink); background: var(--ink-soft); }
 .box.warn { border-color: var(--stamp); background: var(--stamp-soft); }
+.box.dead { opacity: 0.3; text-decoration: line-through; }
 .ex { font-size: 0.7rem; color: var(--stamp); border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; margin-left: 3px; white-space: nowrap; }
 .pill { font-size: 0.78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid var(--wait); color: var(--wait); }
 .stamp { display: inline-block; border: 2px solid var(--stamp); color: var(--stamp); font-weight: 700; padding: 2px 12px; border-radius: 6px; transform: rotate(-6deg); letter-spacing: 0.1em; font-size: 1.1rem; }
 .thump .stamp { animation: thump .5s ease-out; }
 @keyframes thump { 0% { transform: rotate(-6deg) scale(2.2); opacity: 0; } 70% { transform: rotate(-6deg) scale(.92); opacity: 1; } 100% { transform: rotate(-6deg) scale(1); } }
-
-.rows { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; font-size: 0.84rem; }
-th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { color: var(--muted); font-weight: 500; font-size: 0.76rem; }
-td.mono { white-space: nowrap; }
-tr.pick td { background: var(--ink-soft); font-weight: 700; }
-.rows.drop tbody tr { animation: drop .4s ease both; }
-@keyframes drop { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
-
-/* 19단계 띠 */
-.strip-wrap { overflow-x: auto; }
-.steps19 { display: grid; grid-template-columns: repeat(19, minmax(24px, 1fr)); gap: 3px; min-width: 520px; }
-.steps19 div { border: 1px solid var(--line); border-radius: 4px; text-align: center; font-family: var(--font-mono); font-size: 0.72rem; padding: 6px 0; background: var(--bg); }
-.steps19.lit div { background: var(--ink-soft); border-color: var(--ink); }
-.steps19.running div { animation: light .35s ease both; }
+.chain .box { flex: 1 1 120px; }
+.chain.running .box { animation: light .4s ease both; }
 @keyframes light { from { background: var(--bg); border-color: var(--line); } to { background: var(--ink-soft); border-color: var(--ink); } }
-.steps19 .s18 { font-weight: 700; outline: 2px solid var(--ink); outline-offset: -2px; }
-.steps19.failed .s17 { background: var(--stamp-soft); border-color: var(--stamp); color: var(--stamp); }
-.steps19.failed .s18, .steps19.failed .s19 { background: var(--bg); border-color: var(--line); opacity: 0.35; text-decoration: line-through; outline: none; }
-.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.8rem; color: var(--muted); }
-.legend b { color: var(--ink); }
-
-/* 문서 쪼개기 */
-.two { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 10px; }
-@media (max-width: 640px) { .two { grid-template-columns: minmax(0, 1fr); } }
-.doc { font-family: var(--font-mono); font-size: 0.78rem; display: grid; }
-.piece { border-left: 3px solid transparent; padding: 0 10px; position: relative; transition: margin .5s ease, border-color .5s ease, background .5s ease; }
-.piece .ln { white-space: pre-wrap; overflow-wrap: anywhere; }
-.len { position: absolute; right: 8px; top: 3px; font-size: 0.7rem; color: var(--ink); opacity: 0; transition: opacity .3s; }
-.cut { height: 0; border-top: 1px dashed transparent; position: relative; transition: border-color .3s; }
-.cut::after { content: "✂"; position: absolute; left: -2px; top: -0.8em; font-size: 0.85rem; color: var(--stamp); opacity: 0; transition: opacity .3s; }
-.doc.f2 .cut { border-top-color: var(--stamp); }
-.doc.f2 .cut::after { opacity: 1; }
-.doc.f3 .piece { margin: 4px 0; border-left-color: var(--ink); background: var(--ink-soft); border-radius: 4px; padding-block: 4px; padding-right: 58px; }
-.doc.f3 .len { opacity: 1; }
-.h1line { transition: opacity .5s ease; padding: 0 10px; }
-.doc.f1 .h1line, .doc.f2 .h1line, .doc.f3 .h1line { opacity: 0.3; text-decoration: line-through; }
-.mini { font-family: var(--font-mono); font-size: 0.76rem; display: grid; gap: 4px; }
-.mini div { border-left: 3px solid var(--ink); background: var(--ink-soft); border-radius: 4px; padding: 3px 8px; overflow-wrap: anywhere; }
-.badcut { font-family: var(--font-mono); font-size: 0.78rem; }
-.badcut span { background: var(--stamp-soft); border: 1px dashed var(--stamp); border-radius: 4px; padding: 1px 4px; }
-.note { font-size: 0.82rem; color: var(--muted); margin: 0; }
+.chain.failed .box { animation: none; }
+.ck { font-family: var(--font-mono); font-size: 0.8rem; display: grid; gap: 4px; }
+.ck div { border-left: 3px solid var(--ink); background: var(--ink-soft); border-radius: 4px; padding: 3px 8px; overflow-wrap: anywhere; }
+.ck .more { border: 0; background: none; color: var(--muted); padding-left: 11px; }
+.badcut span { background: var(--stamp-soft); border: 1px dashed var(--stamp); border-radius: 4px; padding: 1px 4px; font-family: var(--font-mono); font-size: 0.82rem; }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-at], .piece, .cut, .cut::after, .len, .h1line { transition: none !important; }
-  .thump .stamp, .rows.drop tbody tr, .steps19.running div { animation: none !important; }
+  [data-at], .box, .seg .bar i { transition: none !important; }
+  .thump .stamp, .chain.running .box { animation: none !important; }
 }
 
 /* 펼친 요약 */
-.sum { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; min-width: 0; }
-.card h3 { margin: 0; font-size: 0.95rem; }
+.sum { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; align-content: start; min-width: 0; font-size: 0.86rem; }
+.card h3 { margin: 0 0 2px; font-size: 0.95rem; }
 .card h3 span { font-family: var(--font-mono); color: var(--ink); margin-right: 6px; }
-.card dl { margin: 0; display: grid; gap: 4px; font-size: 0.85rem; }
-.card dt { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; }
-.card dd { margin: 0 0 4px; }
+.card p { margin: 0; }
+.card .k { font-size: 0.72rem; color: var(--muted); margin-right: 4px; }
 .card.todo { border-style: dashed; color: var(--muted); }
-h2 { font-size: 1rem; margin: 4px 0 0; }
 footer { font-size: 0.78rem; color: var(--muted); }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>규정 문서 반영 복습<small>ONE Student · 저절로 재생, 끝나면 처음부터</small></h1>
+  <h1>규정 문서 반영 복습<small>ONE Student</small></h1>
 
   <div class="progress" id="progress"></div>
 
-  <section class="stage" aria-live="polite">
-    <div class="stage-top">
-      <span class="chip" id="chip"></span>
-      <p class="verdict" id="verdict"></p>
-    </div>
+  <section class="stage">
+    <span class="chip" id="chip"></span>
     <div class="scene" id="scene"></div>
-    <p class="sub" id="sub"></p>
+    <p class="sub" id="sub" aria-live="polite"></p>
+    <div class="player">
+      <button class="pbtn" id="prev" type="button" aria-label="이전 장면">◀ 이전</button>
+      <button class="pbtn main" id="toggle" type="button">❚❚ 멈춤</button>
+      <button class="pbtn" id="next" type="button" aria-label="다음 장면">다음 ▶</button>
+      <span class="count" id="count"></span>
+      <span class="speed">속도
+        <button type="button" data-ms="8000">느리게</button>
+        <button type="button" data-ms="5500">보통</button>
+        <button type="button" data-ms="3500">빠르게</button>
+      </span>
+    </div>
   </section>
 
   <h2>한 장 요약</h2>
   <div class="sum" id="sum"></div>
 
-  <footer>값은 저장소 파일로 직접 잰 것이고, <span class="ex">예시</span>는 모양만 보여 주는 값. 출처: <a href="https://github.com/ChildrenAon/TIL/blob/main/2026/November/11-23.md">TIL 11-23</a> · <a href="https://github.com/ChildrenAon/TIL/blob/main/2026/November/11-24.md">11-24</a> · <a href="https://github.com/ONE-Student-WKU/web/blob/develop/server/scripts/seedRegulations.js">seedRegulations.js</a></footer>
+  <footer>←/→ 장면 이동 · 스페이스 멈춤. 값은 저장소 파일로 잰 것이고 <span class="ex">예시</span>는 모양만 보여 주는 값. 출처: <a href="https://github.com/ChildrenAon/TIL/blob/main/2026/November/11-23.md">TIL 11-23</a> · <a href="https://github.com/ChildrenAon/TIL/blob/main/2026/November/11-24.md">11-24</a> · <a href="https://github.com/ONE-Student-WKU/web/blob/develop/server/scripts/seedRegulations.js">seedRegulations.js</a></footer>
 </div>
 
 <script>
-// 장면 = { at: 이 번호 이하의 data-at 요소를 보임, sub: 자막, fx: 그 장면에서 덧붙일 효과, ms: 길이 }
+// 단계마다 html 한 장 + 장면 목록. 장면 = { at: 이 번호 이하 data-at 요소를 보임, sub: 자막, fx: 덧붙일 효과 }
 const steps = [
   {
     n: 1, name: '상황과 값',
-    verdict: '규정 문서 하나 → 문서 1행 + 조각 N행(조각마다 숫자 배열). 챗봇은 그 조각을 찾아 답한다.',
     html: `
       <div class="flow">
-        <div class="box" data-at="0"><span class="lbl">입력 파일</span><code>db/regulations/졸업/조기졸업.md</code></div>
+        <div class="box" data-at="0"><span class="lbl">규정 문서</span><code>졸업/조기졸업.md</code></div>
         <span class="arrow" data-at="1">→</span>
-        <div class="box hl" data-at="1"><span class="lbl">regulation_documents · 1행</span><span class="mono">{ id: 12<span class="ex">예시</span>, title: '조기졸업', category: '졸업' }</span></div>
+        <div class="box" data-at="1"><span class="lbl">문서 · 1행</span>제목 '조기졸업', 분류 '졸업'</div>
+        <span class="arrow" data-at="2">→</span>
+        <div class="box hl" data-at="2"><span class="lbl">조각 · 6행</span>조각 글 + 숫자 배열 <span class="mono">[0.008, -0.029, …]</span><span class="ex">예시</span></div>
       </div>
-      <div class="rows" data-at="2" id="chunks"><table>
-        <thead><tr><th>chunk_index</th><th>content (앞부분)</th><th>embedding <span class="ex">예시</span></th></tr></thead>
-        <tbody>${[['0','출처: https://www.wku.ac.kr/…'],['1','## 관련규정'],['2','### 1. 조기졸업 정의'],['3','### 2. 조기졸업 신청 성적기준'],['4','### 3. 조기졸업 신청 제한'],['5','### 4. 유의사항']]
-          .map(([i, c], j) => `<tr id="c${i}" style="animation-delay:${j * 0.18}s"><td class="mono">${i}</td><td>${c}</td><td class="mono">[0.008, -0.029, …]</td></tr>`).join('')}</tbody>
-      </table></div>
       <div class="flow" data-at="3">
-        <div class="box"><span class="lbl">학생 질문</span>조기졸업하려면 평점이 몇이어야 해?</div>
+        <div class="box"><span class="lbl">질문</span>조기졸업 평점 기준이 뭐야?</div>
         <span class="arrow">→</span>
-        <div class="box hl"><span class="lbl">뜻이 가장 가까운 조각</span>chunk 3 · 신청 성적기준</div>
+        <div class="box hl"><span class="lbl">뜻이 가장 가까운 조각</span>신청 성적기준</div>
         <span class="arrow">→</span>
         <div class="box"><span class="lbl">답변</span>그 조각을 근거로 AI가 답함</div>
       </div>
-      <div class="box warn" data-at="4"><span class="lbl">이게 없으면</span>문서를 고쳐도 DB에는 옛 조각 → 챗봇이 옛 규정으로 답함. 그래서 코드 배포와 따로 도는 반영 길이 있다.</div>`,
+      <div class="box warn" data-at="4"><span class="lbl">이게 없으면</span>문서를 고쳐도 DB엔 옛 조각 → 챗봇이 옛 규정으로 답함</div>`,
     frames: [
       { at: 0, sub: '규정 문서 하나에서 시작한다' },
-      { at: 1, sub: '문서 정보는 regulation_documents에 1행' },
-      { at: 2, sub: '본문은 조각 6개. 조각마다 임베딩(뜻을 숫자 배열로)을 Voyage AI에서 받아 함께 저장', fx: () => document.getElementById('chunks').classList.add('drop') },
-      { at: 3, sub: '챗봇은 질문과 뜻이 가장 가까운 조각을 찾아 답한다 (RAG)', fx: () => document.getElementById('c3').classList.add('pick') },
-      { at: 4, sub: '문서 하나만 고쳐도 규정 문서 전체를 다시 임베딩한다. 트랜잭션은 문서 하나 단위' },
+      { at: 1, sub: '문서 정보는 DB에 1행' },
+      { at: 2, sub: '본문은 조각 6개로. 조각마다 뜻을 숫자 배열(임베딩)로 받아 같이 저장' },
+      { at: 3, sub: '챗봇은 질문과 뜻이 가장 가까운 조각을 찾아 답한다 (RAG)' },
+      { at: 4, sub: '그래서 문서를 고치면 다시 넣어야 한다. 하나만 고쳐도 전체를 다시 임베딩' },
     ],
   },
   {
     n: 2, name: '반영 시작',
-    verdict: 'main에 규정 경로 파일이 push되면 실행이 생기고, db-reseed 승인을 받아야 돈다.',
     html: `
       <div class="flow">
-        <div class="box" data-at="0"><span class="lbl">요청 (자동)</span>main push<br><code>db/regulations/**</code> 바뀜</div>
+        <div class="box" data-at="0"><span class="lbl">요청 (자동)</span>main push<br><code>db/regulations/**</code></div>
         <span class="arrow" data-at="1">→</span>
         <div class="box" data-at="1"><span class="lbl">GitHub Actions</span>실행 생성 <span class="pill">Waiting</span></div>
         <span class="arrow" data-at="2">→</span>
-        <div class="box" data-at="2" id="stampbox" style="display:grid;place-items:center"><span class="lbl">db-reseed 승인자</span><span class="stamp">승인</span></div>
+        <div class="box" data-at="2" id="stampbox" style="display:grid;place-items:center"><span class="lbl">승인자</span><span class="stamp">승인</span></div>
         <span class="arrow" data-at="3">→</span>
-        <div class="box hl" data-at="3"><span class="lbl">step 시작</span>Railway 배포 → 재시딩 → 결과 확인</div>
+        <div class="box hl" data-at="3"><span class="lbl">시작</span>배포 → 재시딩 → 결과 확인</div>
       </div>
       <div class="flow">
-        <div class="box warn" data-at="4"><span class="lbl">실행이 아예 안 생김</span>develop 머지 · 코드만 바꾼 push → 운영 반영 시점은 <b>main</b></div>
-        <div class="box warn" data-at="5"><span class="lbl">실제로 있었던 일</span>적용범위 파일이 <code>paths</code>에 없음 → 고쳐도 시작조차 안 됨, 에러도 없음 → 경로 추가 + PR마다 경고하는 DB Reseed Guard</div>
-      </div>
-      <div class="box" data-at="6"><span class="lbl">버린 방법</span>승인 없이 바로 재시딩 → 실수 문서도 즉시 반영 · 비용 즉시 / 운영 서버에서 seed 직접 → 기록 없음, 가짜 학생 계정 위험</div>`,
+        <div class="box warn" data-at="4"><span class="lbl">실행이 안 생김</span>develop 머지 · 코드만 바꾼 push</div>
+        <div class="box warn" data-at="5"><span class="lbl">실제로 있었던 일</span><code>paths</code> 누락 → 조용히 안 돎 → PR마다 경고 추가</div>
+      </div>`,
     frames: [
-      { at: 0, sub: 'main에 push됐고, 바뀐 파일이 paths(db/regulations/** 등)에 걸린다' },
+      { at: 0, sub: 'main에 push됐고, 바뀐 파일이 규정 경로에 걸린다' },
       { at: 1, sub: '실행이 생기지만 Waiting으로 멈춰 있다. push는 요청일 뿐' },
-      { at: 2, sub: 'db-reseed 승인자가 Approve 한 번. 이것만 승인이다', fx: () => document.getElementById('stampbox').classList.add('thump') },
-      { at: 3, sub: '그제야 step이 돈다: Railway 배포 → 재시딩 → 결과 확인' },
-      { at: 4, sub: 'develop 머지나 코드만 바꾼 push는 실행이 아예 안 생긴다' },
-      { at: 5, sub: '경로를 빠뜨리면 재시딩이 조용히 안 돈다. 그래서 PR마다 경로 누락을 경고한다' },
-      { at: 6, sub: '승인을 빼거나 서버에서 직접 돌리는 방법은 버렸다' },
+      { at: 2, sub: '승인자가 Approve 한 번. 이것만 승인이다', fx: () => $('stampbox').classList.add('thump') },
+      { at: 3, sub: '그제야 배포 → 재시딩 → 결과 확인이 돈다' },
+      { at: 4, sub: 'develop 머지나 코드만 바꾼 push는 실행이 아예 안 생긴다. 반영 시점은 main' },
+      { at: 5, sub: '경로를 빠뜨리면 조용히 안 돌아서, PR마다 경로 누락을 경고한다' },
     ],
   },
   {
     n: 3, name: '실행',
-    verdict: 'Actions는 승인된 커밋을 railway up으로 올리기만 하고, 빌드와 19단계 재시딩은 Railway가 한다.',
     html: `
       <div class="flow">
-        <div class="box" data-at="0"><span class="lbl">GitHub Actions</span><code>railway up</code> 승인된 커밋을 올림</div>
+        <div class="box" data-at="0"><span class="lbl">Actions</span><code>railway up</code></div>
         <span class="arrow" data-at="1">→</span>
-        <div class="box" data-at="1"><span class="lbl">Railway</span>빌드 (DB는 아직 그대로)</div>
+        <div class="box" data-at="1"><span class="lbl">Railway</span>빌드</div>
         <span class="arrow" data-at="2">→</span>
-        <div class="box" data-at="2"><span class="lbl">Railway</span>Start Command → 프로세스 시작</div>
+        <div class="box" data-at="2"><span class="lbl">Railway</span>Start Command 실행</div>
       </div>
-      <div data-at="3" style="display:grid;gap:6px">
-        <div class="strip-wrap"><div class="steps19" id="s19">${Array.from({length: 19}, (_, i) => `<div class="s${i + 1}" style="animation-delay:${i * 0.12}s">${i + 1}</div>`).join('')}</div></div>
-        <div class="legend"><span>1 테이블 최신화</span><span>2~17 학사 데이터를 표에 저장</span><span><b>18 규정 임베딩 (챗봇)</b></span><span>19 규정 조문 표</span></div>
+      <div class="flow chain" id="chain" data-at="3">
+        <div class="box" style="animation-delay:0s"><span class="lbl">1단계</span>테이블 최신화</div>
+        <span class="arrow">&amp;&amp;</span>
+        <div class="box" id="acad" style="animation-delay:.5s"><span class="lbl">2~17단계</span>학사 데이터 → 표</div>
+        <span class="arrow">&amp;&amp;</span>
+        <div class="box" id="emb" style="animation-delay:1s"><span class="lbl">18단계</span><b>규정 임베딩</b></div>
+        <span class="arrow">&amp;&amp;</span>
+        <div class="box" id="art" style="animation-delay:1.5s"><span class="lbl">19단계</span>규정 조문 표</div>
       </div>
-      <div class="flow">
-        <div class="box" data-at="4"><span class="lbl">Cron Job</span>끝나면 프로세스는 사라지고 설정(Start Command 등)만 남음</div>
-        <div class="box warn" data-at="5"><span class="lbl">버린 명령</span><code>redeploy</code> → 옛 빌드를 다시 돌림, 승인한 커밋 반영 보장 ✗ → <code>up</code>으로 바꿈</div>
-      </div>
-      <div class="box warn" data-at="6"><span class="lbl">실제로 있었던 일</span>17단계(개설과목) 실패 → <code>&amp;&amp;</code>라서 문제없는 18 · 19단계도 안 돎 → 챗봇이 옛 규정으로 답함</div>
-      <div class="box" data-at="7"><span class="lbl">헷갈리기 쉬운 점</span>18단계는 앞 단계가 저장한 걸 쪼개는 게 아니라 규정 파일을 직접 읽는다. <code>&amp;&amp;</code>는 순서만 묶고 값을 넘기지 않는다</div>`,
+      <div class="box warn" data-at="5"><span class="lbl">버린 명령</span><code>redeploy</code> → 옛 빌드를 다시 돌림 → 승인한 커밋 반영 보장 ✗</div>`,
     frames: [
-      { at: 0, sub: 'Actions는 승인된 main 커밋을 railway up으로 올리기만 한다' },
-      { at: 1, sub: 'Railway가 빌드한다. 빌드는 작업이 아니다, DB는 아직 그대로' },
-      { at: 2, sub: '설정의 Start Command로 프로세스를 띄운다' },
-      { at: 3, sub: '19단계를 && 로 하나씩 차례로. 챗봇용 규정 임베딩은 18단계뿐', ms: 4200, fx: () => document.getElementById('s19').classList.add('running') },
-      { at: 4, sub: '끝나면 프로세스는 사라지고 설정만 남는다 (Cron Job)' },
-      { at: 5, sub: '처음 쓴 redeploy는 옛 빌드를 다시 돌려서 up으로 바꿨다' },
-      { at: 6, sub: '17단계가 실패하면 && 때문에 규정 반영까지 막힌다', ms: 3800, fx: () => { const s = document.getElementById('s19'); s.classList.remove('running'); s.classList.add('lit', 'failed'); } },
-      { at: 7, sub: '순서로 묶였을 뿐, 18단계는 앞 단계 결과를 쓰지 않는다' },
+      { at: 0, sub: 'Actions는 승인된 커밋을 Railway에 올리기만 한다' },
+      { at: 1, sub: 'Railway가 빌드한다. 빌드는 아직 작업이 아니다' },
+      { at: 2, sub: '설정의 Start Command로 재시딩을 시작한다' },
+      { at: 3, sub: '19단계를 && 로 차례로. 챗봇용 규정 임베딩은 18단계뿐', fx: () => $('chain').classList.add('running') },
+      { at: 3, sub: '17단계(개설과목)가 실패하면 && 때문에 18 · 19단계도 안 돈다 → 챗봇은 옛 규정', fx: fail },
+      { at: 5, sub: '처음 쓴 redeploy는 옛 빌드를 다시 돌려서, 커밋을 직접 올리는 up으로 바꿨다' },
     ],
   },
   {
     n: 4, name: '문서 쪼개기',
-    verdict: '정리 문서는 ## · ### 소제목마다, 학칙 원문은 "제N조" · "【별표 N】"마다 자른다.',
     html: `
-      <div class="two">
-        <div style="display:grid;gap:6px;min-width:0">
-          <span class="note" data-at="1">문서 제목 → <b>조기졸업</b> (# 제목 줄에서 꺼냄)</span>
-          <div class="doc" id="doc" data-at="0">
-            <div class="h1line"><div class="ln"># 조기졸업</div></div>
-            ${[[102, '출처: https://www.wku.ac.kr/…', '담당부서: 학사지원과'], [39, '## 관련규정', '◎ 학칙 제6조(수업년한) 제2항…'], [59, '### 1. 조기졸업 정의', '학업이 우수한 자에게 수업년한을 1～2학기 단축…'], [125, '### 2. 조기졸업 신청 성적기준', '…평균평점이 4.3이상인 학생…'], [225, '### 3. 조기졸업 신청 제한', '- 학사경고자 및 징계처분을 받은 학생 …'], [203, '### 4. 유의사항', '- 신청학기 평균평점이 기준 미달이면 승인 취소 …']]
-              .map(([n, ...ls], i) => `${i ? '<div class="cut"></div>' : ''}<div class="piece">${ls.map((l) => `<div class="ln">${l}</div>`).join('')}<span class="len">${n}자</span></div>`).join('')}
-          </div>
-        </div>
-        <div style="display:grid;gap:8px;align-content:start;min-width:0">
-          <div class="box" data-at="4"><span class="lbl">학칙 원문 (.txt) · 제N조마다</span>
-            <div class="mini"><div>(머리말: 문서 이름 · 개정 이력)</div><div>제1조(목적) 이 학칙은…</div><div>제2조(교육목표) 본 대학교는…</div><div>… 조마다 한 조각</div><div>【별표 1】 표가 앞 조에 붙지 않게 따로</div></div>
-          </div>
-          <div class="box warn" data-at="5"><span class="lbl">버린 방법: 500자씩 자르기</span><div class="badcut">…매학기 교과목 <span>평균평점이</span> ✂ <span>4.3이상인 학생</span>…</div>조문이 중간에 끊긴다. AI에게 맡기기도 결과가 매번 다를 수 있어 버림</div>
-        </div>
+      <div class="flow">
+        <div class="box hl" data-at="0"><span class="lbl">정리 문서 (.md) · 소제목마다</span>
+          <div class="ck"><div>### 1. 조기졸업 정의 …</div><div>### 2. 조기졸업 신청 성적기준 …</div><div class="more">… 이 문서는 6조각</div></div></div>
+        <div class="box hl" data-at="1"><span class="lbl">학칙 원문 (.txt) · 조마다</span>
+          <div class="ck"><div>제1조(목적) …</div><div>제2조(교육목표) …</div><div class="more">… 학칙은 127조각</div></div></div>
       </div>
-      <p class="note" data-at="3">실측: 정리 문서 77개 → 1,194조각(보통 500자쯤) · 학칙 127 · 시행규칙 144 · 수업관리규정 22조각</p>
-      <div class="box warn" data-at="6"><span class="lbl">함정 (11-27 확인)</span>제목을 지우는 정규식은 LF에서만 맞는다 → Windows(CRLF)에서 로컬 시드를 돌리면 첫 조각에 <code># 조기졸업</code>이 남는다</div>`,
+      <div class="box warn" data-at="2"><span class="lbl">버린 방법: 글자 수로 자르기</span><div class="badcut"><span>…평균평점이</span> ✂ <span>4.3이상인 학생…</span></div></div>`,
     frames: [
-      { at: 0, sub: '정리 문서(.md) 하나를 통째로 읽는다' },
-      { at: 1, sub: '"# 제목" 줄은 조각에서 빼고 문서 제목으로만 쓴다', fx: () => doc('f1') },
-      { at: 2, sub: '## · ### 소제목이 나오는 줄마다 자른다', fx: () => doc('f2') },
-      { at: 3, sub: '경계 사이가 조각 하나. 첫 소제목 앞 글(머리말)도 조각 하나', fx: () => doc('f3') },
-      { at: 4, sub: '학칙 원문은 "제N조"마다 자르고, 【별표 N】도 따로 잘라 조각 하나가 수만 자가 되는 걸 막는다', fx: () => doc('f3') },
-      { at: 5, sub: '글자 수로 자르면 조문이 끊겨서, 문서에 이미 있는 구조로 자른다. 같은 파일이면 늘 같은 조각', fx: () => doc('f3') },
-      { at: 6, sub: '로컬(Windows)에서는 줄바꿈 때문에 제목 줄이 남을 수 있다', fx: () => doc('f3') },
+      { at: 0, sub: '정리 문서는 ## · ### 소제목이 나올 때마다 자른다' },
+      { at: 1, sub: '학칙 원문은 "제N조"가 나올 때마다 자른다' },
+      { at: 2, sub: '글자 수로 자르면 조문이 중간에 끊긴다. 그래서 문서에 이미 있는 구조로 자른다' },
     ],
   },
 ];
-const END = { name: '다음', sub: '5~7단계(임베딩 받기 · 바꿔 넣기 · 성공 판정과 챗봇 반영)는 공부하면 이어 붙여요. 처음부터 다시 재생합니다' };
 
 const summary = [
-  ['1', '상황과 값', '규정 문서 → 문서 1행 + 조각 N행(임베딩). 챗봇은 가까운 조각으로 답함', '문서 하나만 고쳐도 전체를 다시 임베딩', '없으면 챗봇이 옛 규정으로 답함'],
-  ['2', '반영 시작', 'main push + paths → 실행 생김 → db-reseed 승인 → 실행', '승인 없이 바로 / 서버에서 seed 직접 → 버림', 'paths 누락 → 조용히 안 돎 → Guard 추가'],
-  ['3', '실행', 'railway up → Railway 빌드 → Start Command → 19단계 &&', 'redeploy → 옛 빌드 → up으로 바꿈', '17단계 실패 → 18 규정 반영까지 막힘'],
-  ['4', '문서 쪼개기', '정리 문서는 소제목, 원문은 제N조 · 【별표】마다', '글자 수 · AI로 자르기 → 끊김 · 매번 다름', 'CRLF면 로컬에서 제목 줄이 남음'],
+  ['1', '상황과 값', '문서 → DB 1행 + 조각 N행(임베딩). 챗봇은 가까운 조각으로 답함', '하나만 고쳐도 전체를 다시 임베딩'],
+  ['2', '반영 시작', 'main push + 규정 경로 → 실행 생김 → 승인 → 재시딩', 'paths 누락 → 조용히 안 돎 → PR 경고'],
+  ['3', '실행', 'railway up → 빌드 → Start Command → 19단계 &&', '17 실패 → 18 규정 반영도 막힘 / redeploy 버림'],
+  ['4', '문서 쪼개기', '정리 문서는 소제목, 원문은 제N조마다', '글자 수로 자르면 조문이 끊김 / Windows(CRLF) 로컬에선 제목 줄이 남음'],
 ];
-document.getElementById('sum').innerHTML = summary.map(([n, nm, a, b, c]) => `<div class="card"><h3><span>${n}</span>${nm}</h3><dl><dt>흐름</dt><dd>${a}</dd><dt>버린 방법 · 판단</dt><dd>${b}</dd><dt>실패 · 함정</dt><dd>${c}</dd></dl></div>`).join('')
-  + `<div class="card todo"><h3><span>5~7</span>임베딩 받기 · 바꿔 넣기 · 성공 판정</h3><p class="note" style="margin:0">공부 전. 공부하면 재생과 요약에 이어 붙인다.</p></div>`;
 
 const $ = (id) => document.getElementById(id);
-const doc = (f) => { const d = $('doc'); if (!d) return; d.classList.remove('f1', 'f2', 'f3'); d.classList.add(f); };
+function fail() {
+  const c = $('chain'); c.classList.remove('running'); c.classList.add('failed');
+  $('acad').classList.add('warn'); $('acad').innerHTML = '<span class="lbl">17단계</span>개설과목 실패 ✕';
+  $('emb').classList.add('dead'); $('art').classList.add('dead');
+}
+
+$('sum').innerHTML = summary.map(([n, nm, a, b]) => `<div class="card"><h3><span>${n}</span>${nm}</h3><p>${a}</p><p><span class="k">주의</span>${b}</p></div>`).join('')
+  + `<div class="card todo"><h3><span>5~7</span>임베딩 받기 · 바꿔 넣기 · 성공 판정</h3><p>공부 전. 공부하면 이어 붙인다.</p></div>`;
+
 const timeline = [];
 steps.forEach((s, si) => s.frames.forEach((f, fi) => timeline.push({ si, fi, ...f })));
-timeline.push({ si: steps.length, end: true, ms: 4500 });
+timeline.push({ si: steps.length, fi: 0, end: true, sub: '5~7단계(임베딩 받기 · 바꿔 넣기 · 성공 판정)는 공부하면 이어 붙여요. 처음부터 다시 재생합니다' });
 
-$('progress').innerHTML = steps.map((s, i) => `<div class="seg" id="seg${i}"><div class="bar"><i></i></div><span class="nm">${s.n} ${s.name}</span></div>`).join('')
-  + `<div class="seg" id="seg${steps.length}"><div class="bar"><i></i></div><span class="nm">5~7 공부 전</span></div>`;
+$('progress').innerHTML = steps.map((s, i) => `<button class="seg" type="button" data-si="${i}"><span class="bar"><i></i></span><span class="nm">${s.n} ${s.name}</span></button>`).join('')
+  + `<button class="seg" type="button" data-si="${steps.length}"><span class="bar"><i></i></span><span class="nm">5~7 공부 전</span></button>`;
 
-let idx = 0, shown = -1, timer = null;
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let idx = 0, playing = true, timer = null, ms = 5500;
+try { const v = +localStorage.getItem('replay-ms'); if ([8000, 5500, 3500].includes(v)) ms = v; } catch (e) {}
 
-function showStep(si) {
-  shown = si;
-  const s = steps[si];
-  if (!s) {
-    $('chip').textContent = '5~7단계';
-    $('verdict').textContent = '';
-    $('scene').innerHTML = `<div class="box" style="align-self:center">임베딩 받기 → 바꿔 넣기 → 성공 판정과 챗봇 반영</div>`;
-    return;
+// i번째 장면을 그린다. 같은 단계의 앞 장면 효과를 차례로 다시 적용해 되감기도 같은 모습이 된다.
+let shownSi = -1, shownFi = -1;
+function show(i) {
+  idx = (i + timeline.length) % timeline.length;
+  const f = timeline[idx], s = steps[f.si];
+  const stepForward = f.si === shownSi && f.fi === shownFi + 1;
+  if (!stepForward) {
+    // 다른 단계로 가거나 되감으면 장면을 새로 그리고 앞 장면 효과를 다시 적용
+    $('chip').textContent = s ? `${s.n}단계 · ${s.name}` : '5~7단계';
+    $('scene').innerHTML = s ? s.html : '<div class="box">임베딩 받기 → 바꿔 넣기 → 성공 판정과 챗봇 반영</div>';
   }
-  $('chip').textContent = `${s.n}단계 · ${s.name}`;
-  $('verdict').textContent = s.verdict;
-  $('scene').innerHTML = s.html;
+  if (s) {
+    document.querySelectorAll('#scene [data-at]').forEach((el) => el.classList.toggle('off', +el.dataset.at > f.at));
+    (stepForward ? [f] : s.frames.slice(0, f.fi + 1)).forEach((fr) => fr.fx && fr.fx());
+  }
+  shownSi = f.si; shownFi = f.fi;
+  $('sub').textContent = f.sub;
+  $('count').textContent = `${idx + 1} / ${timeline.length}`;
+  document.querySelectorAll('.seg').forEach((seg) => {
+    const si = +seg.dataset.si, total = steps[si] ? steps[si].frames.length : 1;
+    seg.classList.toggle('now', si === f.si);
+    seg.querySelector('i').style.width = si < f.si ? '100%' : si === f.si ? ((f.fi + 1) / total * 100) + '%' : '0';
+  });
+  schedule();
 }
+function schedule() { clearTimeout(timer); timer = playing && !document.hidden ? setTimeout(() => show(idx + 1), ms) : null; }
+function setPlaying(p) { playing = p; $('toggle').textContent = p ? '❚❚ 멈춤' : '▶ 재생'; schedule(); }
 
-function frame() {
-  const f = timeline[idx];
-  if (f.si !== shown) showStep(f.si);
-  if (f.end) {
-    $('sub').textContent = END.sub;
-  } else {
-    document.querySelectorAll('#scene [data-at]').forEach((el) => {
-      const at = +el.dataset.at;
-      el.classList.toggle('off', at > f.at);
-    });
-    if (f.fx) f.fx();
-    $('sub').textContent = f.sub;
-  }
-  // 진행 막대
-  for (let i = 0; i <= steps.length; i++) {
-    const seg = $('seg' + i);
-    seg.classList.toggle('done', i < f.si);
-    seg.classList.toggle('now', i === f.si);
-    const bar = seg.querySelector('i');
-    if (i === f.si) {
-      const total = f.end ? 1 : steps[i].frames.length;
-      const pos = f.end ? 1 : f.fi + 1;
-      bar.style.transition = reduce ? 'none' : 'width .4s ease';
-      bar.style.width = (pos / total * 100) + '%';
-    } else bar.style.width = i < f.si ? '100%' : '0';
-  }
-  const ms = f.ms || 3400;
-  idx = (idx + 1) % timeline.length;
-  if (idx === 0) shown = -1; // 처음으로 돌아가면 장면을 새로 그린다
-  timer = setTimeout(frame, ms);
-}
-
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { clearTimeout(timer); timer = null; }
-  else if (!timer) timer = setTimeout(frame, 600);
+$('prev').onclick = () => show(idx - 1);
+$('next').onclick = () => show(idx + 1);
+$('toggle').onclick = () => setPlaying(!playing);
+document.querySelectorAll('.seg').forEach((b) => b.onclick = () => show(timeline.findIndex((f) => f.si === +b.dataset.si)));
+document.querySelectorAll('.speed button').forEach((b) => {
+  b.setAttribute('aria-pressed', String(+b.dataset.ms === ms));
+  b.onclick = () => {
+    ms = +b.dataset.ms;
+    document.querySelectorAll('.speed button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    try { localStorage.setItem('replay-ms', ms); } catch (e) {}
+    schedule();
+  };
 });
-// 주소 끝 #step-N이 있으면 그 단계부터 재생한다(TIL 날짜 기록에서 바로 그 단계로 오도록)
-const startStep = /^#step-(\d)$/.exec(location.hash);
-if (startStep) { const i = timeline.findIndex((f) => steps[f.si] && steps[f.si].n === +startStep[1]); if (i >= 0) idx = i; }
-frame();
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') show(idx + 1);
+  else if (e.key === 'ArrowLeft') show(idx - 1);
+  else if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); setPlaying(!playing); }
+});
+document.addEventListener('visibilitychange', schedule);
+
+// 주소 끝 #step-N이면 그 단계부터 (TIL 날짜 기록에서 바로 오도록)
+const m = /^#step-(\d)$/.exec(location.hash);
+const start = m ? timeline.findIndex((f) => steps[f.si] && steps[f.si].n === +m[1]) : 0;
+show(start >= 0 ? start : 0);
 </script>
 </body>
 </html>
